@@ -35,9 +35,16 @@ The primary focus is on establishing a complete and robust authentication flow, 
     -   `app.routes.ts` restructured for `/login` and authenticated `/app` routes.
     -   `AuthService` logout navigates to `/login`.
     -   `app.html` and `app.ts` conditionally render UI based on authentication.
-- **Previously Completed (Frontend - UI/UX & Styling):**
-    -   Global styles in `styles.scss` and `LoginComponent` styling.
-    -   SASS compilation error resolved.
+- **Frontend - UI/UX & Styling:**
+    -   **New:** Enhanced global styles in `styles.scss` with a modern font stack, revised color palette (including specific bid/ask colors), and updated CSS variables.
+    -   **New:** Styled the main application shell (`app.html`, `app.scss`) with a responsive header, navigation, and footer.
+    -   **New:** Styled `OrderBookComponent` (`order-book.scss`, `order-book.html`) to display bids on the left and asks on the right, with responsive table styling and appropriate color coding.
+    -   **New:** Styled `OrderEntryComponent` (`order-entry.scss`, `order-entry.html`) with a modern, responsive form layout.
+    -   **New:** Styled `MyOrdersComponent` (`my-orders.scss`, `my-orders.html`) with a responsive table layout for displaying user orders and added a `div.table-container` for better small-screen scrollability.
+    -   **Fix:** Corrected SASS `lighten()`/`darken()` usage in component SCSS files (`order-entry.scss`, `order-book.scss`, `my-orders.scss`) by ensuring SASS variables (e.g., `global.$primary-color-value`) are used with the `global.` namespace.
+    -   **Fix:** Corrected SASS import path for `styles.scss` in `app.scss`.
+    -   Previously completed: `LoginComponent` styling.
+    -   Previously completed: SASS compilation error resolved (initial one).
 - **Previously Completed (Backend Setup):**
     -   Spring Boot application now successfully runs on port 8080, dependencies resolved, circular dependencies handled.
     -   `BinanceDataService` connects.
@@ -47,16 +54,14 @@ The primary focus is on establishing a complete and robust authentication flow, 
 
 ## 3. Next Steps (Immediate)
 
-1.  **Frontend - Continue UI/UX Enhancements:**
-    -   Style the main application shell (`app.html`, `app.scss`) for authenticated users.
-    -   Gradually apply modern styling and responsiveness to `OrderBookComponent`, `OrderEntryComponent`, and `MyOrdersComponent`.
-    -   Improve user feedback mechanisms (e.g., loading spinners, toast notifications) across the application.
-2.  **Frontend - Refine WebSocket & Order Book Display:**
+1.  **Frontend - Refine WebSocket & Order Book Display:**
     -   Thoroughly test and debug the WebSocket connection from Angular to the Spring backend.
     -   Ensure `OrderBookComponent` correctly receives and displays live data.
     -   Address any persisting "Loading order book..." messages by checking browser console logs for WebSocket errors or data format mismatches.
-3.  **Frontend - Component Functionality:**
+2.  **Frontend - Component Functionality:**
     -   Flesh out `OrderEntryComponent` and `MyOrdersComponent` functionality (form validation, interaction with services).
+3.  **Frontend - UI/UX Enhancements (Further):**
+    -   Improve user feedback mechanisms (e.g., loading spinners where appropriate, consider toast notifications for success/error messages beyond current simple text).
 4.  **Memory Bank:** Ensure `progress.md` is updated to reflect the latest changes.
 
 ## 4. Active Decisions & Considerations

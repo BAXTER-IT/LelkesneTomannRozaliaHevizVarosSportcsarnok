@@ -1,0 +1,130 @@
+@use '../../../styles.scss' as global; // Import global variables
+
+:host {
+  display: block;
+  padding: calc(var(--spacing-unit) * 2);
+  background-color: var(--surface-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: calc(var(--spacing-unit) * 2.5);
+  color: var(--text-color);
+  font-size: 1.5rem;
+}
+
+.order-book-container {
+  display: flex;
+  flex-wrap: wrap; // Allow wrapping on smaller screens
+  gap: calc(var(--spacing-unit) * 3); // Space between bids and asks sections
+  justify-content: space-around; // Distribute space
+}
+
+.bids,
+.asks {
+  flex: 1; // Each section tries to take equal width
+  min-width: 300px; // Minimum width before wrapping or shrinking too much
+  padding: calc(var(--spacing-unit) * 2);
+  border-radius: var(--border-radius);
+  // background-color: lighten(var(--background-color), 2%); // Slightly different bg for sections
+
+  h3 {
+    text-align: center;
+    margin-bottom: calc(var(--spacing-unit) * 1.5);
+    font-size: 1.25rem;
+  }
+}
+
+.bids h3 {
+  color: var(--bid-color);
+}
+
+.asks h3 {
+  color: var(--ask-color);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    padding: var(--spacing-unit) calc(var(--spacing-unit) * 1.5);
+    text-align: right;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  th {
+    color: var(--muted-text-color);
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    background-color: var(--background-color); // Header background for table
+  }
+
+  td {
+    font-size: 0.95rem;
+  }
+
+  tbody tr {
+    &:hover {
+      background-color: var(--background-color);
+    }
+    &:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  // Specific coloring for bid/ask rows
+  .bids tbody tr td:first-child { // Price column for bids
+    color: var(--bid-color);
+    font-weight: 500;
+  }
+  .asks tbody tr td:first-child { // Price column for asks
+    color: var(--ask-color);
+    font-weight: 500;
+  }
+}
+
+.error {
+  color: var(--danger-color);
+  text-align: center;
+  padding: var(--spacing-unit);
+  background-color: lighten(global.$danger-color-value, 35%);
+  border: 1px solid var(--danger-color);
+  border-radius: var(--border-radius);
+}
+
+.timestamp {
+  text-align: center;
+  margin-top: calc(var(--spacing-unit) * 2);
+  font-size: 0.85rem;
+  color: var(--muted-text-color);
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .order-book-container {
+    flex-direction: column; // Stack bids and asks on smaller screens
+    gap: calc(var(--spacing-unit) * 2);
+  }
+
+  .bids, .asks {
+    min-width: 100%; // Take full width when stacked
+  }
+
+  h2 {
+    font-size: 1.3rem;
+  }
+
+  table {
+    th, td {
+      padding: calc(var(--spacing-unit) * 0.75) var(--spacing-unit);
+      font-size: 0.9rem;
+    }
+    td {
+      font-size: 0.9rem;
+    }
+  }
+}

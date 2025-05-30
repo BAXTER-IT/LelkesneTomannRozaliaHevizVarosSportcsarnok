@@ -47,15 +47,21 @@
         -   On successful login, navigates to `/app/order-book` and **now calls `orderService.getMyOrders()`**.
     -   `app.html` & `app.ts`: Conditional rendering based on auth state.
 -   **UI/UX & Styling:**
-    -   `styles.scss`: Global styles and theming variables.
-    -   `LoginComponent`: Styled with loading/error states.
+    -   **New:** `styles.scss`: Enhanced with a modern font stack, revised color palette (including specific bid/ask colors), and updated CSS variables for a modern look and feel.
+    -   **New:** `app.scss` (`app.html`): Styled the main application shell with a responsive header, navigation, and footer.
+    -   **New:** `OrderBookComponent` (`order-book.scss`, `order-book.html`): Styled to display bids on the left and asks on the right, with responsive table styling and appropriate color coding.
+    -   **New:** `OrderEntryComponent` (`order-entry.scss`, `order-entry.html`): Styled with a modern, responsive form layout.
+    -   **New:** `MyOrdersComponent` (`my-orders.scss`, `my-orders.html`): Styled with a responsive table layout. Added `div.table-container` in HTML for better small-screen scrollability.
+    -   **Fix:** Corrected SASS import paths in `my-orders.scss`, `order-book.scss`, `order-entry.scss` (from `../../../../styles.scss` to `../../../styles.scss`) and in `app.scss` (from `../../styles.scss` to `../styles.scss`).
+    -   **Fix:** Corrected SASS `lighten()`/`darken()` usage in component SCSS files (`order-entry.scss`, `order-book.scss`, `my-orders.scss`) by ensuring SASS variables (e.g., `global.$primary-color-value`) are used with the `global.` namespace.
+    -   `LoginComponent`: Previously styled with loading/error states.
 -   **Core Services:**
     -   **Updated `OrderService` (`services/order.ts`):** Base URL updated to be relative for proxy usage. `getMyOrders()` is now actively used post-login. (Auth header handling within `OrderService` itself still needs refinement).
     -   **Updated `WebSocketService` (`services/websocket.ts`):** WebSocket URL (`wsUrl`) updated to be relative to `window.location.host` to work with the proxy. (Needs full data display testing).
 -   **Basic Components (Skeletons/Partially Implemented):**
-    -   `OrderBookComponent`: (Needs data display debugging).
-    -   `OrderEntryComponent`.
-    -   `MyOrdersComponent`.
+    -   `OrderBookComponent`: Styling applied. (Still needs data display debugging as per previous notes).
+    -   `OrderEntryComponent`: Styling applied. (Functionality to be fleshed out).
+    -   `MyOrdersComponent`: Styling applied. (Functionality to be fleshed out).
 -   **HttpClient:** Configured.
 
 ## 2. What's Left to Build / Refine (Key Areas)
@@ -79,9 +85,8 @@
     -   Complete implementation details for `MyOrdersComponent` (e.g., display formatting, cancel confirmation, interaction with `OrderService`).
     -   Ensure all components correctly interact with their respective services.
 -   **Styling & UI/UX (Beyond Login Page):**
-    -   Style the main application shell (`app.html`, `app.scss`) for authenticated users.
-    -   Apply SCSS styling for a "modern look and feel" and responsiveness to `OrderBookComponent`, `OrderEntryComponent`, and `MyOrdersComponent`.
-    -   Improve user feedback mechanisms (e.g., loading spinners, toast notifications for success/error) across the application.
+    -   **Completed:** Applied SCSS styling for a "modern look and feel" and responsiveness to global styles, app shell, `OrderBookComponent`, `OrderEntryComponent`, and `MyOrdersComponent`.
+    -   Improve user feedback mechanisms (e.g., loading spinners where appropriate, consider toast notifications for success/error messages beyond current simple text).
 -   **Error Handling:** Implement user-friendly display of errors from API calls or WebSocket issues in components other than Login.
 -   **State Management:** Evaluate if current signal-based state is sufficient or if a more robust solution (e.g., NgRx) is needed as complexity grows.
 -   **Testing:** Unit tests for services and components.
@@ -104,6 +109,9 @@
     4.  Updating `package.json` start script to ensure proxy is used.
     5.  (User needs to ensure Angular dev server is restarted after proxy config changes).
 -   **Node.js Version Warning:** (Resolved) While Angular CLI installed, `npm` warned about Node.js v18.19.1 not being officially supported by the latest CLI (which prefers v20.11+). This was resolved by upgrading Node.js to v20.19.2 using nvm.
+-   **SASS Compilation Errors:** (Resolved)
+    -   Corrected `@use` path for `styles.scss` in all component SCSS files and `app.scss`.
+    -   Modified `lighten()`/`darken()` calls in component SCSS files to use SASS color variables (e.g. `global.$primary-color-value`) with the correct namespace, instead of directly using CSS custom properties or un-namespaced SASS variables.
 
 ## 5. Evolution of Project Decisions
 

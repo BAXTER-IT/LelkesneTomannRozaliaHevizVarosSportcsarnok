@@ -9,35 +9,44 @@
 
 html, body {
   height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   line-height: 1.6;
   background-color: var(--background-color);
   color: var(--text-color);
 }
 
 // SASS variable for compile-time use with SASS functions
-$primary-color-value: #007bff;
+$primary-color-value: #0072ce; // Slightly more modern blue
+$success-color-value: #20c997; // Tealish green
+$danger-color-value: #e63946; // Modern red
 
 // CSS Variables for Theming
 :root {
-  --primary-color: #{$primary-color-value}; // Use SASS var to define CSS var for consistency
-  --secondary-color: #6c757d;
-  --success-color: #28a745;
-  --danger-color: #dc3545;
+  --primary-color: #{$primary-color-value};
+  --secondary-color: #6c757d; // Keep as is or choose a lighter grey e.g. #adb5bd
+  --success-color: #{$success-color-value};
+  --danger-color: #{$danger-color-value};
   --warning-color: #ffc107;
   --info-color: #17a2b8;
 
-  --background-color: #f4f7f6;
-  --surface-color: #ffffff;
-  --text-color: #333333;
-  --muted-text-color: #666666;
-  --border-color: #dee2e6;
+  --bid-color: var(--success-color); // Green for bids
+  --bid-color-light: #d1f7eb; // Lighter background for bid items
+  --ask-color: var(--danger-color);  // Red for asks
+  --ask-color-light: #fde2e4;   // Lighter background for ask items
 
-  --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+
+  --background-color: #f8f9fa; // Lighter grey background
+  --surface-color: #ffffff;    // White for card-like elements
+  --text-color: #212529;       // Darker text for better contrast
+  --muted-text-color: #6c757d; // Muted grey
+  --border-color: #e9ecef;     // Lighter border color
+
+  --font-family-sans-serif: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
   --spacing-unit: 8px;
-  --border-radius: 4px;
+  --border-radius: 6px; // Slightly more rounded
+  --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 // Utility Classes (Optional, can be expanded)
@@ -68,7 +77,7 @@ button {
   transition: background-color 0.2s ease-in-out;
 
   &:hover {
-    background-color: darken($primary-color-value, 10%); // Use SASS variable here
+    background-color: darken($primary-color-value, 8%); // Use SASS variable here
   }
 
   &:disabled {

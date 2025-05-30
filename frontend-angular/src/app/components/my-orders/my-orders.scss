@@ -1,0 +1,124 @@
+@use '../../../styles.scss' as global;
+
+:host {
+  display: block;
+  padding: calc(var(--spacing-unit) * 2);
+  background-color: var(--surface-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: calc(var(--spacing-unit) * 2.5);
+  color: var(--text-color);
+  font-size: 1.5rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--spacing-unit);
+
+  th, td {
+    padding: calc(var(--spacing-unit) * 1.25) calc(var(--spacing-unit) * 1.5);
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+  }
+
+  th {
+    color: var(--muted-text-color);
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    background-color: var(--background-color);
+  }
+
+  td {
+    font-size: 0.95rem;
+  }
+
+  tbody tr {
+    &:hover {
+      background-color: var(--background-color);
+    }
+    &:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  // Specific styling for order type
+  td:nth-child(3) { // Type column
+    &[data-type="BUY"] {
+      color: var(--bid-color);
+      font-weight: 500;
+    }
+    &[data-type="SELL"] {
+      color: var(--ask-color);
+      font-weight: 500;
+    }
+  }
+
+  button {
+    padding: var(--spacing-unit) calc(var(--spacing-unit) * 1.5);
+    font-size: 0.85rem;
+    background-color: var(--danger-color);
+    color: white;
+    border: none;
+
+    &:hover {
+      background-color: darken(global.$danger-color-value, 8%);
+    }
+
+    &:disabled {
+      background-color: var(--secondary-color);
+      opacity: 0.7;
+    }
+  }
+}
+
+p { // For "Loading...", "Error...", "No active orders."
+  text-align: center;
+  padding: calc(var(--spacing-unit) * 2);
+  font-size: 1rem;
+  color: var(--muted-text-color);
+}
+
+.error {
+  color: var(--danger-color);
+  background-color: lighten(global.$danger-color-value, 35%);
+  border: 1px solid var(--danger-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-unit);
+}
+
+// Responsive table: make it scrollable on small screens
+@media (max-width: 768px) {
+  :host {
+    padding: var(--spacing-unit); // Reduce padding on smaller screens
+  }
+  
+  h2 {
+    font-size: 1.3rem;
+  }
+
+  .table-container { // You might need to wrap the table in a div with this class in the HTML
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
+  }
+
+  table {
+    th, td {
+      white-space: nowrap; // Prevent text wrapping in cells
+      padding: var(--spacing-unit);
+      font-size: 0.9rem;
+    }
+    td {
+      font-size: 0.85rem;
+    }
+    button {
+      white-space: nowrap;
+    }
+  }
+}

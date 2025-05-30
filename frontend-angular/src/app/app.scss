@@ -1,0 +1,93 @@
+@use '../styles.scss' as global; // Import global variables, mixins etc.
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; // Ensure the app takes at least the full viewport height
+}
+
+header {
+  background-color: var(--surface-color);
+  padding: calc(var(--spacing-unit) * 1.5) calc(var(--spacing-unit) * 3);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--box-shadow);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h1 {
+    font-size: 1.75rem;
+    color: var(--primary-color);
+    margin: 0;
+  }
+
+  nav {
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      gap: calc(var(--spacing-unit) * 2);
+
+      li {
+        a {
+          text-decoration: none;
+          color: var(--text-color);
+          font-weight: 500;
+          padding: var(--spacing-unit) calc(var(--spacing-unit) * 1.5);
+          border-radius: var(--border-radius);
+          transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+
+          &:hover,
+          &.active { // Assuming Angular adds 'active' class for routerLinkActive
+            background-color: var(--primary-color);
+            color: white;
+          }
+        }
+      }
+    }
+  }
+}
+
+main {
+  flex-grow: 1; // Allows main content to expand and push footer down
+  padding: calc(var(--spacing-unit) * 3);
+  background-color: var(--background-color); // Main content area background
+}
+
+footer {
+  background-color: var(--surface-color);
+  color: var(--muted-text-color);
+  text-align: center;
+  padding: calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 3);
+  border-top: 1px solid var(--border-color);
+  font-size: 0.9rem;
+}
+
+// Responsive adjustments for header navigation
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    h1 {
+      margin-bottom: var(--spacing-unit);
+    }
+
+    nav {
+      width: 100%;
+      ul {
+        flex-direction: column;
+        gap: var(--spacing-unit);
+        li a {
+          display: block; // Make links take full width for easier tapping
+          text-align: center;
+        }
+      }
+    }
+  }
+
+  main {
+    padding: calc(var(--spacing-unit) * 2);
+  }
+}
