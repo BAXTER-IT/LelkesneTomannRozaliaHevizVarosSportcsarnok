@@ -2,70 +2,67 @@
 
 ## 1. Current Work Focus
 
-The primary focus is on establishing a complete and robust authentication flow, including backend support and frontend integration, and ensuring subsequent authenticated actions (like fetching user-specific data) can be performed.
+The backend has been updated to use H2 for data persistence, replacing the in-memory solution. The immediate focus is to test this persistence and then shift to frontend tasks, particularly WebSocket integration and component functionality.
 
 ## 2. Recent Key Changes & Milestones
 
-- **Backend - Authentication:**
-    -   Created `UserLoginResponseDTO.java` (`model/dto/`) to define the response structure for successful login.
-    -   Implemented `AuthController.java` (`controller/`) with a new `POST /api/auth/login` endpoint.
-        -   This endpoint uses Spring Security's existing HTTP Basic Authentication mechanism.
-        -   On successful authentication, it returns the `UserLoginResponseDTO` containing the username.
-    -   Updated `SecurityConfig.java` to include CORS configuration.
-    -   Resolved backend port conflict (port 8080 was in use), backend now successfully starts on port 8080. `application.properties` confirmed/reverted to use port 8080.
-- **Frontend - Authentication, CORS Proxy & Data Fetching:**
-    -   Created `proxy.conf.json` to proxy API (`/api`) and WebSocket (`/ws`) requests from `http://localhost:4200` to `http://localhost:8080`. This was implemented to resolve persistent CORS/404 errors.
-    -   Updated `angular.json` to use `proxy.conf.json` for the development server.
-    -   Updated `package.json`'s `start` script to `ng serve --proxy-config proxy.conf.json` to ensure the proxy is always used during development.
-    -   Updated `AuthService.ts`, `OrderService.ts`, and `WebSocketService.ts` to use relative base URLs (e.g., `/api/auth/login`, `/ws/market`) to work with the proxy.
-    -   Defined `UserLoginResponseDTO` interface in `AuthService.ts`.
-    -   Updated `AuthService.login()`:
-        -   Now makes a `POST` request to the (proxied) `/api/auth/login` backend endpoint.
-        -   Includes the Basic Authentication header.
-        -   On successful response, stores user details in `localStorage` and updates `isAuthenticated` and `currentUser` signals.
-        -   Returns an `Observable<UserLoginResponseDTO | null>`.
-    -   Updated `LoginComponent` (`components/login/login.ts`):
-        -   Injects `OrderService`.
-        -   Subscribes to the updated `authService.login()`.
-        -   On successful login (receiving `UserLoginResponseDTO`):
-            -   Navigates to `/app/order-book`.
-            -   Calls `orderService.getMyOrders()` to fetch the user's orders.
-- **Previously Completed (Frontend - Authentication & Routing):**
-    -   `AuthGuard` (`guards/auth.guard.ts`) created to protect routes.
-    -   `app.routes.ts` restructured for `/login` and authenticated `/app` routes.
-    -   `AuthService` logout navigates to `/login`.
-    -   `app.html` and `app.ts` conditionally render UI based on authentication.
-- **Frontend - UI/UX & Styling:**
-    -   **New:** Enhanced global styles in `styles.scss` with a modern font stack, revised color palette (including specific bid/ask colors), and updated CSS variables.
-    -   **New:** Styled the main application shell (`app.html`, `app.scss`) with a responsive header, navigation, and footer.
-    -   **New:** Styled `OrderBookComponent` (`order-book.scss`, `order-book.html`) to display bids on the left and asks on the right, with responsive table styling and appropriate color coding.
-    -   **New:** Styled `OrderEntryComponent` (`order-entry.scss`, `order-entry.html`) with a modern, responsive form layout.
-    -   **New:** Styled `MyOrdersComponent` (`my-orders.scss`, `my-orders.html`) with a responsive table layout for displaying user orders and added a `div.table-container` for better small-screen scrollability.
-    -   **Fix:** Corrected SASS `lighten()`/`darken()` usage in component SCSS files (`order-entry.scss`, `order-book.scss`, `my-orders.scss`) by ensuring SASS variables (e.g., `global.$primary-color-value`) are used with the `global.` namespace.
-    -   **Fix:** Corrected SASS import path for `styles.scss` in `app.scss`.
-    -   **New:** Differentiated user's order book entries from exchange entries with distinct background, bolder, and larger text.
-        -   Backend: Added `source` field to `OrderBookEntry.java` and updated `CombinedOrderBookService.java` to populate it.
-        -   Frontend: Updated `DisplayOrderBookEntry` and `WebSocketMessage` interfaces. Added CSS variables in `styles.scss`, defined `.user-order-entry` class in `order-book.scss`, and applied it conditionally in `order-book.html`.
-    -   Previously completed: `LoginComponent` styling.
-    -   Previously completed: SASS compilation error resolved (initial one).
-- **Previously Completed (Backend Setup):**
-    -   Spring Boot application now successfully runs on port 8080, dependencies resolved, circular dependencies handled.
-    -   `BinanceDataService` connects.
-    -   Basic order creation API and WebSocket handler in place.
+- **Backend - H2 Database Persistence for Orders:**
+    -   **Dependencies:** Added `spring-boot-starter-data-jpa` and `com.h2database:h2` to `pom.xml`.
+    -   **Configuration:** Updated `application.properties` to configure H2 to save to a file (`./data/marketexchange_db`) and enabled the H2 console (`/h2-console`).
+    -   **Entities:**
+        -   `User.java`: Annotated as `@Entity`, `@Table(name = "app_user")`. `userId` (String UUID) is `@Id`.
+        -   `Order.java`: Annotated as `@Entity`, `@Table(name = "user_order")`. Added `Long id` as `@Id @GeneratedValue`. `orderId` (String UUID) is a unique business key. Changed `userId` (String) to `User user` (`@ManyToOne` relationship). `OrderType` and `OrderSource` enums are stored as strings.
+    -   **Repositories:**
+        -   Created `UserRepository.java` (extends `JpaRepository<User, String>`) with `findByUsername`.
+        -   Created `OrderRepository.java` (extends `JpaRepository<Order, Long>`) with `findByUser_UsernameOrderByTimestampDesc` and `findByOrderIdAndUser_Username`.
+        -   Deleted `InMemoryUserOrderRepository.java`.
+    -   **Services:**
+        -   `UserOrderService.java`:
+            -   Injected `OrderRepository` and `UserRepository`.
+            -   `createOrder`: Now finds/creates a `User` entity and associates it with the `Order`. Orders are saved via `orderRepository`.
+            -   `cancelOrder`: Uses `orderRepository` to find and delete orders.
+            -   `getOrdersByUsername`: (Renamed from `getOrdersByUserId`) Uses `orderRepository`.
+            -   Added `getOrderByOrderIdAndUsername` for fetching a specific user order by its business ID.
+            -   `getAllUserPersistedOrders`: Fetches all orders with `OrderSource.USER` for `CombinedOrderBookService`.
+        -   `CombinedOrderBookService.java`:
+            -   Constructor and fields updated to use `UserOrderService` instead of `InMemoryUserOrderRepository`.
+            -   `getCombinedOrderBook`: Fetches user orders via `userOrderService.getAllUserPersistedOrders()`, then filters and processes them to build `userBidsMap` and `userAsksMap`.
+    -   **Controller:**
+        -   `OrderController.java`:
+            -   `getMyOrders`: Updated to call `userOrderService.getOrdersByUsername()`.
+            -   `getOrderById`: Updated to call `userOrderService.getOrderByOrderIdAndUsername()` for fetching a specific order by its business ID, scoped to the authenticated user.
+- **Previously (Backend - Authentication):**
+    -   Created `UserLoginResponseDTO.java`.
+    -   Implemented `AuthController.java` with `POST /api/auth/login`.
+    -   Updated `SecurityConfig.java` for CORS.
+- **Previously (Frontend - Authentication, CORS Proxy & Data Fetching):**
+    -   `proxy.conf.json` and related Angular configurations for backend communication.
+    -   `AuthService.login()` updated for backend calls.
+    -   `LoginComponent` calls `orderService.getMyOrders()` post-login.
+- **Previously (Frontend - UI/UX & Styling):**
+    -   Extensive styling updates to global styles, app shell, and components (`OrderBookComponent`, `OrderEntryComponent`, `MyOrdersComponent`, `LoginComponent`).
+    -   Differentiation of user orders in the order book display.
+- **Previously (Backend Setup):**
+    -   Core Spring Boot application setup, Binance connection.
 - **Memory Bank:**
     -   All core files are actively being updated to reflect progress.
 
 ## 3. Next Steps (Immediate)
 
-1.  **Frontend - Refine WebSocket & Order Book Display:**
+1.  **Backend - Test H2 Persistence:**
+    -   Run the backend (`mvn spring-boot:run`).
+    -   Create some orders via API (e.g., using `curl` or by logging in through the frontend if it's functional enough).
+    -   Stop and restart the backend.
+    -   Verify that previously created orders are still present (e.g., by fetching them via API or checking the H2 console at `http://localhost:8080/h2-console`).
+2.  **Frontend - Refine WebSocket & Order Book Display:**
     -   Thoroughly test and debug the WebSocket connection from Angular to the Spring backend.
     -   Ensure `OrderBookComponent` correctly receives and displays live data.
     -   Address any persisting "Loading order book..." messages by checking browser console logs for WebSocket errors or data format mismatches.
-2.  **Frontend - Component Functionality:**
+3.  **Frontend - Component Functionality:**
     -   Flesh out `OrderEntryComponent` and `MyOrdersComponent` functionality (form validation, interaction with services).
-3.  **Frontend - UI/UX Enhancements (Further):**
-    -   Improve user feedback mechanisms (e.g., loading spinners where appropriate, consider toast notifications for success/error messages beyond current simple text).
-4.  **Memory Bank:** Ensure `progress.md` is updated to reflect the latest changes.
+4.  **Frontend - UI/UX Enhancements (Further):**
+    -   Improve user feedback mechanisms.
+5.  **Memory Bank:** Ensure `progress.md` and other relevant files are fully updated post-H2 integration and testing.
 
 ## 4. Active Decisions & Considerations
 

@@ -5,24 +5,34 @@
 ## 1. What Works (Successfully Implemented & Tested)
 
 ### Backend:
--   **Core Application:** Spring Boot application now starts successfully on port 8080 (port conflict resolved).
--   **Dependencies:** Maven dependencies resolve, and the project compiles (Java 1.8 target).
+-   **Core Application:** Spring Boot application starts successfully on port 8080.
+-   **Dependencies:** Maven dependencies resolve (including new H2 and JPA).
 -   **Circular Dependencies:** Resolved between services.
--   **Data Models:** All core data models (`Order`, `User`, etc.) are defined. `UserLoginResponseDTO` added.
--   **In-Memory Repository:** `InMemoryUserOrderRepository` for user orders is functional.
+-   **Data Models (JPA Entities):**
+    -   `User.java`: Updated as `@Entity` for `app_user` table.
+    -   `Order.java`: Updated as `@Entity` for `user_order` table, with `@ManyToOne` to `User`.
+-   **H2 Database Persistence:**
+    -   **New:** Configured in `application.properties` to save to `./data/marketexchange_db`.
+    -   **New:** H2 console enabled at `/h2-console`.
+    -   **New:** `UserRepository` and `OrderRepository` (JPA interfaces) created.
+    -   **Removed:** `InMemoryUserOrderRepository` deleted.
+-   **Services (Updated for JPA):**
+    -   `UserOrderService`: Refactored to use `UserRepository` and `OrderRepository`. Handles `User` entity creation/lookup and `Order` persistence. Methods updated (e.g., `getOrdersByUsername`, `getOrderByOrderIdAndUsername`).
+    -   `CombinedOrderBookService`: Refactored to use `UserOrderService` for fetching persisted user orders.
 -   **Security & Authentication:**
-    -   HTTP Basic Authentication with in-memory users (`user1`/`pass1`, `user2`/`pass2`) is active.
-    -   **New:** `AuthController` with `POST /api/auth/login` endpoint implemented. Successfully returns `UserLoginResponseDTO` on valid Basic Auth.
-    -   **Updated:** `SecurityConfig.java` includes CORS configuration. `application.properties` confirmed to use port 8080.
--   **REST API (User Orders):**
-    -   `POST /api/orders` (create order): Tested successfully with `curl`. Authenticated users can create orders.
-    -   `DELETE /api/orders/{orderId}` (cancel order): Skeleton implemented.
-    -   `GET /api/orders/my-orders` (get user's orders): Skeleton implemented. This endpoint is now called by the frontend after successful login.
+    -   HTTP Basic Authentication with in-memory users (`user1`/`pass1`, `user2`/`pass2`) remains active.
+    -   `AuthController` with `POST /api/auth/login` endpoint functional.
+    -   `SecurityConfig.java` includes CORS.
+-   **REST API (User Orders - Updated for JPA & Username):**
+    -   `OrderController`:
+        -   `POST /api/orders` (create order): Uses `UserOrderService` with username, persists order.
+        -   `DELETE /api/orders/{orderId}` (cancel order): Uses `UserOrderService` with username, deletes persisted order.
+        -   `GET /api/orders/my-orders`: Uses `userOrderService.getOrdersByUsername()`.
+        -   `GET /api/orders/{orderId}`: Uses `userOrderService.getOrderByOrderIdAndUsername()`.
 -   **Binance Integration:**
-    -   `BinanceDataService` connects to Binance's public WebSocket stream.
-    -   Parses incoming depth messages.
+    -   `BinanceDataService` connects to Binance's public WebSocket stream and parses messages.
 -   **Order Book Aggregation & Broadcast:**
-    -   `CombinedOrderBookService` aggregates user and Binance data.
+    -   `CombinedOrderBookService` aggregates (now persisted) user orders and Binance data.
     -   `OrderBookWebSocketHandler` broadcasts combined updates.
 
 ### Frontend:
@@ -128,3 +138,4 @@
 -   **Login Page UI:** Refined to be a standalone view by conditionally rendering the main app header/footer.
 -   **CORS Handling:** Shifted from backend-only CORS configuration to a frontend proxy (`proxy.conf.json`) for the Angular development server due to persistent preflight/404 issues.
 -   **Backend Port:** Temporarily changed to 8081 due to port conflict, then reverted to 8080 after user indicated the port might be free.
+-   **Data Persistence:** Switched from in-memory order storage to H2 file-based database persistence.

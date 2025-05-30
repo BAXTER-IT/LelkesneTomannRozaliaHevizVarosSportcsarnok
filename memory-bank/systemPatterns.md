@@ -27,7 +27,7 @@ graph TD
     BusinessServices --> ExternalIntegrations
 
     ExternalIntegrations -- WebSocket/REST --> ExternalExchange[External Exchange (Binance)]
-    DataRepositories -- Manages --> InMemoryDB[In-Memory Database (User Orders)]
+    DataRepositories -- Manages --> H2FileDB[H2 File Database (User Orders)]
 ```
 
 ## 2. Key Technical Decisions & Patterns
@@ -39,8 +39,11 @@ graph TD
     -   Pattern: Standard Controller-Service-Repository.
 -   **WebSockets (Spring WebSocket):** For real-time, bidirectional communication of the combined order book data to the frontend.
     -   Backend pushes updates to connected clients.
--   **In-Memory Data Storage:** User orders are stored in-memory using concurrent-safe Java collections (`ConcurrentHashMap`, `NavigableMap` within `CopyOnWriteArrayList` for price levels) for simplicity and performance, suitable for a non-persistent simulation.
-    -   `InMemoryUserOrderRepository` encapsulates this logic.
+-   **Persistent Data Storage (H2 Database):**
+    -   User orders are persisted using H2 database, configured to save to a file (`./data/marketexchange_db`).
+    -   Spring Data JPA is used for repository interfaces (`OrderRepository`, `UserRepository`).
+    -   `User` and `Order` models are JPA entities.
+    -   Replaced `InMemoryUserOrderRepository`.
 -   **External API Integration (Binance):**
     -   A dedicated service (`BinanceDataService`) connects to Binance's public WebSocket API (e.g., `btcusdt@depth5@100ms`) to receive live market depth updates.
     -   Uses `org.java-websocket` client library.
@@ -76,7 +79,7 @@ graph TD
 1.  `BinanceDataService` (Backend) receives a depth update from Binance WebSocket.
 2.  It updates its local cache of Binance's order book.
 3.  It triggers a callback in `CombinedOrderBookService` (Backend).
-4.  `CombinedOrderBookService` fetches current user orders from `InMemoryUserOrderRepository` and the updated Binance data from `BinanceDataService`.
+4.  `CombinedOrderBookService` fetches current user orders (from the H2 database via `UserOrderService`) and the updated Binance data from `BinanceDataService`.
 5.  It aggregates these into a `CombinedOrderBook` object (top 5 bids/asks).
 6.  `CombinedOrderBookService` calls `OrderBookWebSocketHandler.broadcastOrderBookUpdate()` (Backend).
 7.  `OrderBookWebSocketHandler` serializes the `CombinedOrderBook` to JSON and sends it to all connected Angular clients via the backend's WebSocket.
@@ -94,6 +97,6 @@ graph TD
 -   **Authentication:** Transition from Basic Auth to JWT for better security and statelessness.
     -   Implement an HTTP interceptor in Angular to attach JWTs to requests.
 -   **State Management (Frontend):** For more complex state, consider NgRx or other dedicated state management libraries if signals and services become insufficient.
--   **Database (Backend):** Replace in-memory storage with a persistent database (e.g., PostgreSQL, H2 for development) if data persistence is required.
+-   **Database (Backend):** **Completed:** In-memory storage replaced with H2 file-based database. Further transition to PostgreSQL or other production DB could be a future step if needed.
 -   **Scalability:** Consider message queues (e.g., RabbitMQ, Kafka) for decoupling services if the system grows.
 -   **Testing:** Implement comprehensive unit, integration, and end-to-end tests.

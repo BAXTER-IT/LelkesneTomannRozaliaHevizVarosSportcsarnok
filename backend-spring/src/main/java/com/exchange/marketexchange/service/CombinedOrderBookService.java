@@ -5,7 +5,7 @@ import com.exchange.marketexchange.model.CombinedOrderBook;
 import com.exchange.marketexchange.model.Order;
 import com.exchange.marketexchange.model.OrderBookEntry;
 import com.exchange.marketexchange.model.OrderType;
-import com.exchange.marketexchange.repository.InMemoryUserOrderRepository;
+// No longer needed: import com.exchange.marketexchange.repository.InMemoryUserOrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,17 +32,16 @@ public class CombinedOrderBookService {
     private static final Logger logger = LoggerFactory.getLogger(CombinedOrderBookService.class);
     private static final int DEPTH_LIMIT = 5; // Show top 5 bids and asks
 
-    private final InMemoryUserOrderRepository userOrderRepository;
+    // Removed: private final InMemoryUserOrderRepository userOrderRepository;
     private final BinanceDataService binanceDataService;
     private final OrderBookWebSocketHandler webSocketHandler;
-    private UserOrderService userOrderService; // Changed to allow setter injection
+    private UserOrderService userOrderService; // Setter injected
 
 
     @Autowired
-    public CombinedOrderBookService(InMemoryUserOrderRepository userOrderRepository,
-                                    BinanceDataService binanceDataService,
+    public CombinedOrderBookService(BinanceDataService binanceDataService, // Removed userOrderRepository
                                     OrderBookWebSocketHandler webSocketHandler) {
-        this.userOrderRepository = userOrderRepository;
+        // Removed: this.userOrderRepository = userOrderRepository;
         this.binanceDataService = binanceDataService;
         this.webSocketHandler = webSocketHandler;
         // UserOrderService will be set via setter
@@ -69,9 +68,23 @@ public class CombinedOrderBookService {
     }
 
     public CombinedOrderBook getCombinedOrderBook(String tradingPair) {
-        // 1. Get user orders
-        NavigableMap<BigDecimal, List<Order>> userBidsMap = userOrderRepository.getBidsMap(tradingPair);
-        NavigableMap<BigDecimal, List<Order>> userAsksMap = userOrderRepository.getAsksMap(tradingPair);
+        // 1. Get user orders from UserOrderService
+        List<Order> allUserOrders = userOrderService.getAllUserPersistedOrders();
+
+        List<Order> relevantUserOrders = allUserOrders.stream()
+                .filter(order -> tradingPair.equals(order.getTradingPair()) && order.getSource() == OrderSource.USER)
+                .collect(Collectors.toList());
+
+        NavigableMap<BigDecimal, List<Order>> userBidsMap = new TreeMap<>(Collections.reverseOrder());
+        NavigableMap<BigDecimal, List<Order>> userAsksMap = new TreeMap<>();
+
+        for (Order order : relevantUserOrders) {
+            if (order.getType() == OrderType.BUY) {
+                userBidsMap.computeIfAbsent(order.getPrice(), k -> new ArrayList<>()).add(order);
+            } else if (order.getType() == OrderType.SELL) {
+                userAsksMap.computeIfAbsent(order.getPrice(), k -> new ArrayList<>()).add(order);
+            }
+        }
 
         // 2. Get Binance orders
         List<OrderBookEntry> binanceBidsList = binanceDataService.getBinanceBids();

@@ -55,7 +55,7 @@ public class OrderController {
         if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        List<Order> myOrders = userOrderService.getOrdersByUserId(userDetails.getUsername());
+        List<Order> myOrders = userOrderService.getOrdersByUsername(userDetails.getUsername()); // Updated method name
         return ResponseEntity.ok(myOrders);
     }
 
@@ -65,17 +65,9 @@ public class OrderController {
          if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        Order order = userOrderService.getOrderById(orderId);
-        if (order == null) {
-            return ResponseEntity.notFound().build();
-        }
-        // Add a check if the user is authorized to view this order,
-        // e.g., if it's their own order or if they are an admin.
-        // For now, if it's found, and user is authenticated, return it.
-        // A stricter check:
-        // if (!order.getUserId().equals(userDetails.getUsername())) {
-        //     return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        // }
-        return ResponseEntity.ok(order);
+        // Fetch order by its business orderId and ensure it belongs to the authenticated user
+        return userOrderService.getOrderByOrderIdAndUsername(orderId, userDetails.getUsername())
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

@@ -11,7 +11,8 @@
 -   **Build Tool:** Apache Maven
 -   **WebSocket Client Library (for Binance):** `org.java-websocket/Java-WebSocket`
 -   **JSON Processing:** Jackson (comes with Spring Boot)
--   **In-Memory Data:** Standard Java Collections (ConcurrentHashMap, TreeMap, CopyOnWriteArrayList)
+-   **Database:** H2 (file-based persistence)
+-   **Data Access:** Spring Data JPA
 
 ### Frontend:
 -   **Framework:** Angular (Version corresponding to global CLI, likely latest stable e.g., v17/v18, but project generated with Node 20 compatibility)
@@ -50,7 +51,7 @@
 
 ## 3. Technical Constraints & Considerations
 
--   **No Persistent Database:** The current requirement is for an in-memory database for user orders. Data will be lost when the backend application stops.
+-   **H2 Database Persistence:** User order data is now persisted to an H2 file (`./data/marketexchange_db`).
 -   **Single Trading Pair Focus (Initially):** The Binance integration and frontend display are initially focused on a single, likely hardcoded or default trading pair (e.g., "BTCUSDT").
 -   **Basic Authentication:** Current security uses HTTP Basic Auth. This has limitations (e.g., sending credentials with each request if not handled by browser session, harder to securely "logout" without closing browser). Planned for future JWT enhancement.
 -   **Error Handling:** Basic error handling is in place; more sophisticated user-facing error messages and logging can be added.
@@ -64,6 +65,8 @@
 -   `spring-boot-starter-web`
 -   `spring-boot-starter-websocket`
 -   `spring-boot-starter-security`
+-   `spring-boot-starter-data-jpa` (New)
+-   `com.h2database:h2` (New)
 -   `org.projectlombok:lombok` (optional)
 -   `org.java-websocket:Java-WebSocket` (for Binance client)
 -   `io.jsonwebtoken:jjwt-*` (for potential JWT use later)
