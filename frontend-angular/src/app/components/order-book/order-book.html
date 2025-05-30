@@ -1,0 +1,56 @@
+<h2>Order Book: {{ currentTradingPair() || 'N/A' }}</h2>
+
+@if (isLoading()) {
+  <p>Loading order book...</p>
+} @else if (errorMessage()) {
+  <p class="error">Error: {{ errorMessage() }}</p>
+} @else {
+  <div class="order-book-container">
+    <div class="bids">
+      <h3>Bids</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Price</th>
+            <th>Quantity</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (bid of bids(); track bid.price) {
+            <tr>
+              <td>{{ bid.price | number:'1.2-8' }}</td>
+              <td>{{ bid.totalQuantity | number:'1.2-8' }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="2">No bids available.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="asks">
+      <h3>Asks</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Price</th>
+            <th>Quantity</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ask of asks(); track ask.price) {
+            <tr>
+              <td>{{ ask.price | number:'1.2-8' }}</td>
+              <td>{{ ask.totalQuantity | number:'1.2-8' }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="2">No asks available.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+  @if (lastUpdated()) {
+    <p class="timestamp">Last updated: {{ lastUpdated() | date:'mediumTime' }}</p>
+  }
+}

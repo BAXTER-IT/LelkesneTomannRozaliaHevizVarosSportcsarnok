@@ -1,0 +1,40 @@
+<h2>My Active Orders</h2>
+
+@if (isLoading()) {
+  <p>Loading your orders...</p>
+} @else if (errorMessage()) {
+  <p class="error">Error: {{ errorMessage() }}</p>
+} @else {
+  @if (myOrders().length > 0) {
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Pair</th>
+          <th>Type</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Timestamp</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (order of myOrders(); track order.orderId) {
+          <tr>
+            <td>{{ order.orderId }}</td>
+            <td>{{ order.tradingPair }}</td>
+            <td>{{ order.type }}</td>
+            <td>{{ order.price | number:'1.2-8' }}</td>
+            <td>{{ order.quantity | number:'1.2-8' }}</td>
+            <td>{{ order.timestamp | date:'medium' }}</td>
+            <td>
+              <button (click)="cancelOrder(order.orderId)" [disabled]="isLoading()">Cancel</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else {
+    <p>You have no active orders.</p>
+  }
+}

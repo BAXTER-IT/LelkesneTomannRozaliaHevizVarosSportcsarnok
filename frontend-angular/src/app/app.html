@@ -1,0 +1,20 @@
+<header>
+  <h1>Market Exchange</h1>
+  <nav>
+    <ul>
+      <li><a routerLink="/order-book">Order Book</a></li>
+      <li><a routerLink="/my-orders">My Orders</a></li>
+      <li><a routerLink="/trade">Trade/Order Entry</a></li>
+      <!-- We'll add a conditional login/logout link later based on auth state -->
+      <li><a routerLink="/login">Login</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <router-outlet></router-outlet>
+</main>
+
+<footer>
+  <p>&copy; 2025 Market Exchange Platform</p>
+</footer>

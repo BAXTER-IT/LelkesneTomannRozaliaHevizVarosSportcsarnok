@@ -1,0 +1,16 @@
+/home/avarga/Projects/workshop/LelkesneTomannRozaliaHevizVarosSportcsarnok/backend-spring/src/main/java/com/exchange/marketexchange/model/CombinedOrderBook.java
+/home/avarga/Projects/workshop/LelkesneTomannRozaliaHevizVarosSportcsarnok/backend-spring/src/main/java/com/exchange/marketexchange/service/CombinedOrderBookService.java
+/home/avarga/Projects/workshop/LelkesneTomannRozaliaHevizVarosSportcsarnok/backend-spring/src/main/java/com/exchange/marketexchange/controller/OrderController.java
+/home/avarga/Projects/workshop/LelkesneTomannRozaliaHevizVarosSportcsarnok/backend-spring/src/main/java/com/exchange/marketexchange/model/User.java
+/home/avarga/Projects/workshop/LelkesneTomannRozaliaHevizVarosSportcsarnok/backend-spring/src/main/java/com/exchange/marketexchange/MarketExchangeApplication.java
+/home/avarga/Projects/workshop/LelkesneTomannRozaliaHevizVarosSportcsarnok/backend-spring/src/main/java/com/exchange/marketexchange/model/dto/BinanceDepthStreamPayload.java
+/home/avarga/Projects/workshop/LelkesneTomannRozaliaHevizVarosSportcsarnok/backend-spring/src/main/java/com/exchange/marketexchange/model/OrderBookEntry.java
+/home/avarga/Projects/workshop/LelkesneTomannRozaliaHevizVarosSportcsarnok/backend-spring/src/main/java/com/exchange/marketexchange/model/OrderSource.java
+/home/avarga/Projects/workshop/LelkesneTomannRozaliaHevizVarosSportcsarnok/backend-spring/src/main/java/com/exchange/marketexchange/model/Order.java
+/home/avarga/Projects/workshop/LelkesneTomannRozaliaHevizVarosSportcsarnok/backend-spring/src/main/java/com/exchange/marketexchange/handler/OrderBookWebSocketHandler.java
+/home/avarga/Projects/workshop/LelkesneTomannRozaliaHevizVarosSportcsarnok/backend-spring/src/main/java/com/exchange/marketexchange/model/OrderType.java
+/home/avarga/Projects/workshop/LelkesneTomannRozaliaHevizVarosSportcsarnok/backend-spring/src/main/java/com/exchange/marketexchange/config/WebSocketConfig.java
+/home/avarga/Projects/workshop/LelkesneTomannRozaliaHevizVarosSportcsarnok/backend-spring/src/main/java/com/exchange/marketexchange/service/BinanceDataService.java
+/home/avarga/Projects/workshop/LelkesneTomannRozaliaHevizVarosSportcsarnok/backend-spring/src/main/java/com/exchange/marketexchange/repository/InMemoryUserOrderRepository.java
+/home/avarga/Projects/workshop/LelkesneTomannRozaliaHevizVarosSportcsarnok/backend-spring/src/main/java/com/exchange/marketexchange/service/UserOrderService.java
+/home/avarga/Projects/workshop/LelkesneTomannRozaliaHevizVarosSportcsarnok/backend-spring/src/main/java/com/exchange/marketexchange/config/SecurityConfig.java
