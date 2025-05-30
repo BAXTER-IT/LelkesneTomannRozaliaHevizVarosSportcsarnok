@@ -15,6 +15,47 @@ h2 {
   font-size: 1.5rem;
 }
 
+.order-book-actions {
+  margin-bottom: calc(var(--spacing-unit) * 2);
+  text-align: right; // Or center, or left, depending on desired placement
+
+  button {
+    padding: var(--spacing-unit) calc(var(--spacing-unit) * 2);
+    background-color: var(--primary-color);
+    color: var(--button-text-color);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: var(--primary-color-dark);
+    }
+  }
+}
+
+.order-book-page-container { // New container for side-by-side layout
+  display: flex;
+  gap: calc(var(--spacing-unit) * 2);
+  align-items: flex-start; // Align items to the top
+}
+
+.order-book-main-content { // Wrapper for the existing order book
+  flex: 1; // Takes up available space, can be adjusted
+}
+
+.order-entry-form-container {
+  width: 350px; // Fixed width for the form, adjust as needed
+  flex-shrink: 0; // Prevent shrinking
+  // Optional: Add border, padding, background if it needs to be visually distinct
+  // background-color: var(--surface-color-secondary);
+  // padding: calc(var(--spacing-unit) * 2);
+  // border-radius: var(--border-radius);
+  // box-shadow: var(--box-shadow-sm);
+}
+
 .order-book-container {
   display: flex;
   flex-wrap: wrap; // Allow wrapping on smaller screens
@@ -112,13 +153,24 @@ table {
 }
 
 // Responsive adjustments
+@media (max-width: 1024px) { // Adjusted breakpoint for better form handling
+  .order-book-page-container {
+    flex-direction: column;
+  }
+
+  .order-entry-form-container {
+    width: 100%; // Full width when stacked
+    margin-top: calc(var(--spacing-unit) * 2);
+  }
+}
+
 @media (max-width: 768px) {
-  .order-book-container {
+  .order-book-container { // This is for bids/asks within the main content
     flex-direction: column; // Stack bids and asks on smaller screens
     gap: calc(var(--spacing-unit) * 2);
   }
 
-  .bids, .asks {
+  .bids, .asks { // These are inside .order-book-main-content
     min-width: 100%; // Take full width when stacked
   }
 

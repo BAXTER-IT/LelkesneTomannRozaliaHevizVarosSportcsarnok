@@ -5,9 +5,21 @@
 } @else if (errorMessage()) {
   <p class="error">Error: {{ errorMessage() }}</p>
 } @else {
-  <div class="order-book-container">
-    <div class="bids">
-      <h3>Bids</h3>
+  <div class="order-book-actions">
+    <button (click)="toggleOrderEntryForm()">
+      @if (showOrderEntryForm()) {
+        Hide Order Form
+      } @else {
+        Add New Order
+      }
+    </button>
+  </div>
+
+  <div class="order-book-page-container">
+    <div class="order-book-main-content">
+      <div class="order-book-container">
+        <div class="bids">
+          <h3>Bids</h3>
       <table>
         <thead>
           <tr>
@@ -49,7 +61,16 @@
         </tbody>
       </table>
     </div>
-  </div>
+  </div> <!-- .order-book-container -->
+    </div> <!-- .order-book-main-content -->
+
+    @if (showOrderEntryForm()) {
+      <div class="order-entry-form-container">
+        <app-order-entry></app-order-entry>
+      </div>
+    }
+  </div> <!-- .order-book-page-container -->
+
   @if (lastUpdated()) {
     <p class="timestamp">Last updated: {{ lastUpdated() | date:'mediumTime' }}</p>
   }

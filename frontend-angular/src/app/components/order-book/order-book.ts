@@ -1,6 +1,7 @@
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common'; // For async pipe and ngFor/ngIf
 import { Subscription } from 'rxjs';
+import { OrderEntry } from '../order-entry/order-entry'; // Import OrderEntryComponent
 import { WebSocketService, WebSocketMessage } from '../../services/websocket';
 import { AuthService } from '../../services/auth';
 import { Router } from '@angular/router';
@@ -13,7 +14,7 @@ export interface DisplayOrderBookEntry {
 
 @Component({
   selector: 'app-order-book',
-  imports: [CommonModule],
+  imports: [CommonModule, OrderEntry], // Add OrderEntryComponent to imports
   templateUrl: './order-book.html',
   styleUrl: './order-book.scss'
 })
@@ -32,6 +33,11 @@ export class OrderBook implements OnInit, OnDestroy {
 
   isLoading = signal(true);
   errorMessage = signal<string | null>(null);
+  showOrderEntryForm = signal(false); // Signal to control form visibility
+
+  toggleOrderEntryForm(): void {
+    this.showOrderEntryForm.set(!this.showOrderEntryForm());
+  }
 
   ngOnInit(): void {
     if (!this.authService.isAuthenticated()) {

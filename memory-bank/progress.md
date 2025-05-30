@@ -72,10 +72,17 @@
     -   **Updated `OrderService` (`services/order.ts`):** Base URL updated to be relative for proxy usage. `getMyOrders()` is now actively used post-login. (Auth header handling within `OrderService` itself still needs refinement).
     -   **Updated `WebSocketService` (`services/websocket.ts`):** WebSocket URL (`wsUrl`) updated to be relative to `window.location.host` to work with the proxy. (Needs full data display testing).
 -   **Basic Components (Skeletons/Partially Implemented):**
-    -   `OrderBookComponent`: Styling applied. (Still needs data display debugging as per previous notes).
+    -   **Updated `OrderBookComponent` (`order-book.ts`, `order-book.html`, `order-book.scss`):**
+        -   Styling applied. (Still needs data display debugging as per previous notes).
+        -   **New:** Added "Add New Order" button and logic to toggle visibility of an embedded `OrderEntryComponent`.
+        -   **New:** `OrderEntryComponent` imported and used.
+        -   **New:** SCSS updated for the new button, layout (side-by-side order book and form), and responsiveness.
     -   `OrderEntryComponent`: Styling applied. (Functionality to be fleshed out).
     -   `MyOrdersComponent`: Styling applied. (Functionality to be fleshed out).
 -   **HttpClient:** Configured.
+-   **Git:**
+    -   **New:** Root `.gitignore` file created.
+    -   **New:** `backend-spring/target/` added to `.gitignore`.
 
 ## 2. What's Left to Build / Refine (Key Areas)
 

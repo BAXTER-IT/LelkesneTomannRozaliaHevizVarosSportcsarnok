@@ -46,6 +46,15 @@ The backend has been updated to use H2 for data persistence, replacing the in-me
     -   Core Spring Boot application setup, Binance connection.
 - **Memory Bank:**
     -   All core files are actively being updated to reflect progress.
+- **Frontend - Order Book Page Enhancement:**
+    -   **`OrderBookComponent` (`order-book.ts`, `order-book.html`, `order-book.scss`):**
+        -   Added an "Add New Order" button.
+        -   Implemented functionality to conditionally display the `OrderEntryComponent` alongside the order book when the button is clicked.
+        -   Updated SCSS for the new button and layout, including responsive adjustments.
+    -   Imported `OrderEntry` component into `OrderBookComponent`.
+- **Git Configuration:**
+    -   Created a root `.gitignore` file.
+    -   Added `backend-spring/target/` to `.gitignore` to exclude Maven build artifacts.
 
 ## 3. Next Steps (Immediate)
 
