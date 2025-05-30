@@ -1,20 +1,23 @@
-<header>
-  <h1>Market Exchange</h1>
-  <nav>
-    <ul>
-      <li><a routerLink="/order-book">Order Book</a></li>
-      <li><a routerLink="/my-orders">My Orders</a></li>
-      <li><a routerLink="/trade">Trade/Order Entry</a></li>
-      <!-- We'll add a conditional login/logout link later based on auth state -->
-      <li><a routerLink="/login">Login</a></li>
-    </ul>
-  </nav>
-</header>
+@if (authService.isAuthenticated()) {
+  <header>
+    <h1>Market Exchange</h1>
+    <nav>
+      <ul>
+        <li><a routerLink="/app/order-book">Order Book</a></li>
+        <li><a routerLink="/app/my-orders">My Orders</a></li>
+        <li><a routerLink="/app/trade">Trade/Order Entry</a></li>
+        <li><a href="#" (click)="logout(); $event.preventDefault()">Logout ({{ authService.currentUser() }})</a></li>
+      </ul>
+    </nav>
+  </header>
+}
 
 <main>
   <router-outlet></router-outlet>
 </main>
 
-<footer>
-  <p>&copy; 2025 Market Exchange Platform</p>
-</footer>
+@if (authService.isAuthenticated()) {
+  <footer>
+    <p>&copy; 2025 Market Exchange Platform</p>
+  </footer>
+}

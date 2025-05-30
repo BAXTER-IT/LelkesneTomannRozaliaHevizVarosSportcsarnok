@@ -1,1 +1,89 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global Styles */
+
+// Basic Reset
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  line-height: 1.6;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+// SASS variable for compile-time use with SASS functions
+$primary-color-value: #007bff;
+
+// CSS Variables for Theming
+:root {
+  --primary-color: #{$primary-color-value}; // Use SASS var to define CSS var for consistency
+  --secondary-color: #6c757d;
+  --success-color: #28a745;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --info-color: #17a2b8;
+
+  --background-color: #f4f7f6;
+  --surface-color: #ffffff;
+  --text-color: #333333;
+  --muted-text-color: #666666;
+  --border-color: #dee2e6;
+
+  --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  --spacing-unit: 8px;
+  --border-radius: 4px;
+}
+
+// Utility Classes (Optional, can be expanded)
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: calc(var(--spacing-unit) * 2);
+}
+
+// Basic styles for links, buttons, forms can be added here
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+button {
+  padding: calc(var(--spacing-unit) * 1.25) calc(var(--spacing-unit) * 2.5);
+  border: 1px solid transparent;
+  border-radius: var(--border-radius);
+  background-color: var(--primary-color);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+
+  &:hover {
+    background-color: darken($primary-color-value, 10%); // Use SASS variable here
+  }
+
+  &:disabled {
+    background-color: var(--secondary-color);
+    cursor: not-allowed;
+  }
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+  padding: calc(var(--spacing-unit) * 1.25);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  width: 100%;
+  margin-bottom: var(--spacing-unit);
+}

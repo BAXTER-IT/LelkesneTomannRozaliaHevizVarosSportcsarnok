@@ -1,17 +1,22 @@
-<h2>Login</h2>
-<form (submit)="login()">
-  <div>
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" [(ngModel)]="username" required>
-  </div>
-  <div>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" [(ngModel)]="password" required>
-  </div>
-  <button type="submit" [disabled]="isLoading()">
-    {{ isLoading() ? 'Logging in...' : 'Login' }}
-  </button>
-  @if (errorMessage()) {
-    <p class="error">{{ errorMessage() }}</p>
-  }
-</form>
+<div class="login-container">
+  <h2>Login</h2>
+  <form (submit)="login()">
+    <div class="form-group">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" [(ngModel)]="username" required>
+    </div>
+    <div class="form-group">
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" [(ngModel)]="password" required>
+    </div>
+    <button type="submit" class="login-button" [disabled]="isLoading()">
+      {{ isLoading() ? 'Logging in...' : 'Login' }}
+      @if (isLoading()) {
+        <span class="loading-indicator"></span>
+      }
+    </button>
+    @if (errorMessage()) {
+      <p class="error-message">{{ errorMessage() }}</p>
+    }
+  </form>
+</div>

@@ -1,12 +1,20 @@
-import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router'; // Added RouterLink import
+import { Component, inject } from '@angular/core';
+import { RouterOutlet, RouterLink } from '@angular/router';
+import { AuthService } from './services/auth'; // Import AuthService
+import { CommonModule } from '@angular/common'; // Import CommonModule for *ngIf
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink], // Added RouterLink to imports
+  imports: [RouterOutlet, RouterLink, CommonModule], // Add CommonModule
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
-  protected title = 'Market Exchange'; // Updated title
+  protected title = 'Market Exchange';
+  authService = inject(AuthService); // Inject AuthService
+
+  logout(): void {
+    this.authService.logout();
+    // Navigation to /login is handled by AuthService.logout()
+  }
 }

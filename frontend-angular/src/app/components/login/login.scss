@@ -1,0 +1,75 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh; // Make sure the login component takes full viewport height
+  padding: calc(var(--spacing-unit) * 2);
+  background-color: var(--background-color); // Use global background
+}
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+  padding: calc(var(--spacing-unit) * 3);
+  background-color: var(--surface-color);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+
+  h2 {
+    margin-bottom: calc(var(--spacing-unit) * 2.5);
+    color: var(--text-color);
+  }
+}
+
+.form-group {
+  margin-bottom: calc(var(--spacing-unit) * 2);
+  text-align: left;
+
+  label {
+    display: block;
+    margin-bottom: var(--spacing-unit);
+    font-weight: 500;
+    color: var(--muted-text-color);
+  }
+
+  input {
+    // Using global input styles from styles.scss
+    // Add specific overrides if needed
+  }
+}
+
+.login-button {
+  width: 100%;
+  margin-top: var(--spacing-unit);
+  // Using global button styles
+}
+
+.error-message {
+  color: var(--danger-color);
+  background-color: rgba(var(--danger-color), 0.1); // Light background for error
+  padding: var(--spacing-unit);
+  border-radius: var(--border-radius);
+  margin-top: calc(var(--spacing-unit) * 2);
+  border: 1px solid rgba(var(--danger-color), 0.2);
+  font-size: 0.9rem;
+}
+
+.loading-indicator {
+  // Basic spinner, can be replaced with a more complex one
+  display: inline-block;
+  border: 3px solid rgba(var(--primary-color), 0.3);
+  border-radius: 50%;
+  border-top-color: var(--primary-color);
+  width: 20px;
+  height: 20px;
+  animation: spin 1s ease-infinite;
+  margin-left: var(--spacing-unit);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

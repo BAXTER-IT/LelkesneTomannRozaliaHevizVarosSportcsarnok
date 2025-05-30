@@ -32,7 +32,7 @@ export class Login {
       next: (success) => {
         this.isLoading.set(false);
         if (success) {
-          this.router.navigate(['/order-book']); // Navigate to a protected route on success
+          this.router.navigate(['/app/order-book']); // Navigate to a protected route on success
         } else {
           this.errorMessage.set('Login failed. Please check your credentials.');
         }

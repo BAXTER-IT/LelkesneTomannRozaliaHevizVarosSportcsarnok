@@ -1,6 +1,7 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core'; // Import inject
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of, tap, BehaviorSubject } from 'rxjs';
+import { Router } from '@angular/router'; // Import Router
+import { Observable, of, tap } from 'rxjs'; // Removed BehaviorSubject as it's not used
 import { catchError } from 'rxjs/operators';
 
 @Injectable({
@@ -14,7 +15,10 @@ export class AuthService {
   public isAuthenticated = signal<boolean>(this.hasAuthData());
   public currentUser = signal<string | null>(this.getUsernameFromStorage());
 
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient); // Use inject
+  private router = inject(Router); // Use inject
+
+  constructor() {} // Constructor can be empty or removed if not used
 
   private hasAuthData(): boolean {
     return typeof localStorage !== 'undefined' && !!localStorage.getItem(this.AUTH_KEY);
@@ -76,7 +80,7 @@ export class AuthService {
     }
     this.isAuthenticated.set(false);
     this.currentUser.set(null);
-    // Optionally, notify backend if session management is involved there
+    this.router.navigate(['/login']); // Navigate to login
   }
 
   // Helper to get auth headers for other services
