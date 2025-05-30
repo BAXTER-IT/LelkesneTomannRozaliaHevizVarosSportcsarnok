@@ -12,9 +12,26 @@
       <option value="SELL">SELL</option>
     </select>
   </div>
+  <div class="order-type-selector">
+    <label>Order Type:</label>
+    <div class="radio-button-group">
+      <input type="radio" id="orderTypeMarket" name="orderTypeSelected" value="market" 
+             [checked]="orderTypeSelected() === 'market'" 
+             (change)="orderTypeSelected.set('market')">
+      <label for="orderTypeMarket" class="radio-button">Market</label>
+
+      <input type="radio" id="orderTypeLimit" name="orderTypeSelected" value="limit"
+             [checked]="orderTypeSelected() === 'limit'"
+             (change)="orderTypeSelected.set('limit')">
+      <label for="orderTypeLimit" class="radio-button">Limit</label>
+    </div>
+  </div>
   <div>
     <label for="price">Price:</label>
-    <input type="number" id="price" name="price" [(ngModel)]="orderRequest.price" required step="any">
+    <input type="number" id="price" name="price" [(ngModel)]="orderRequest.price" 
+           required step="any"
+           [disabled]="orderTypeSelected() === 'market'"
+           [readonly]="orderTypeSelected() === 'market'">
   </div>
   <div>
     <label for="quantity">Quantity:</label>

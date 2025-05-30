@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common'; // For async pipe and ngFor/ngIf
 import { Subscription } from 'rxjs';
 import { OrderEntry } from '../order-entry/order-entry'; // Import OrderEntryComponent
@@ -34,6 +34,16 @@ export class OrderBook implements OnInit, OnDestroy {
   isLoading = signal(true);
   errorMessage = signal<string | null>(null);
   showOrderEntryForm = signal(false); // Signal to control form visibility
+
+  bestBidPrice = computed(() => {
+    const currentBids = this.bids();
+    return currentBids.length > 0 ? currentBids[0].price : null;
+  });
+
+  bestAskPrice = computed(() => {
+    const currentAsks = this.asks();
+    return currentAsks.length > 0 ? currentAsks[0].price : null;
+  });
 
   toggleOrderEntryForm(): void {
     this.showOrderEntryForm.set(!this.showOrderEntryForm());

@@ -66,7 +66,10 @@
 
     @if (showOrderEntryForm()) {
       <div class="order-entry-form-container">
-        <app-order-entry></app-order-entry>
+        <app-order-entry
+          [bestBidPrice]="bestBidPrice()"
+          [bestAskPrice]="bestAskPrice()">
+        </app-order-entry>
       </div>
     }
   </div> <!-- .order-book-page-container -->

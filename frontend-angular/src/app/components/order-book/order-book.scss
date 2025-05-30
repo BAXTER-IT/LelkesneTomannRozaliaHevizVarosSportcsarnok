@@ -31,7 +31,7 @@ h2 {
     transition: background-color 0.2s ease;
 
     &:hover {
-      background-color: var(--primary-color-dark);
+      background-color: darken(global.$primary-color-value, 8%); // Use SASS darken
     }
   }
 }

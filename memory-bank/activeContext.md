@@ -55,6 +55,26 @@ The backend has been updated to use H2 for data persistence, replacing the in-me
 - **Git Configuration:**
     -   Created a root `.gitignore` file.
     -   Added `backend-spring/target/` to `.gitignore` to exclude Maven build artifacts.
+- **Frontend - Order Entry Form Enhancement (Market/Limit Orders):**
+    -   **`OrderEntryComponent` (`order-entry.ts`):**
+        -   Added `orderTypeSelected` signal (default 'market').
+        -   Added `@Input() bestBidPrice` and `@Input() bestAskPrice`.
+        -   Implemented an `effect` to auto-set `orderRequest.price` for 'market' orders based on `orderRequest.type` (BUY/SELL) and `bestBidPrice`/`bestAskPrice`.
+    -   **`OrderEntryComponent` (`order-entry.html`):**
+        -   Added radio buttons for "Market" and "Limit" selection, bound to `orderTypeSelected`.
+        -   Price input field is now `[disabled]` and `[readonly]` when `orderTypeSelected()` is 'market'.
+    -   **`OrderBookComponent` (`order-book.ts`):**
+        -   Added `computed` signals `bestBidPrice` and `bestAskPrice` derived from the live `bids` and `asks` signals.
+    -   **`OrderBookComponent` (`order-book.html`):**
+        -   The `<app-order-entry>` tag now passes `bestBidPrice()` and `bestAskPrice()` as inputs.
+    -   **`OrderEntryComponent` (`order-entry.scss`):**
+        -   Added styles for the radio button group to appear as toggle buttons.
+        -   Enhanced styles for the disabled/readonly price input for better visual distinction.
+        -   Corrected layout: "Order Type:" label is now above the "Market" and "Limit" buttons, which are themselves arranged horizontally.
+    -   **Global Styles (`styles.scss`):**
+        -   Defined `--button-text-color` as white and applied it to global button styles for better contrast on primary-colored buttons.
+    -   **`OrderBookComponent` (`order-book.scss`):**
+        -   Corrected the hover effect for the "Show/Hide Order Form" button to use SASS `darken` function, preventing it from disappearing.
 
 ## 3. Next Steps (Immediate)
 

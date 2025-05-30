@@ -77,7 +77,18 @@
         -   **New:** Added "Add New Order" button and logic to toggle visibility of an embedded `OrderEntryComponent`.
         -   **New:** `OrderEntryComponent` imported and used.
         -   **New:** SCSS updated for the new button, layout (side-by-side order book and form), and responsiveness.
-    -   `OrderEntryComponent`: Styling applied. (Functionality to be fleshed out).
+    -   **Updated `OrderEntryComponent` (Market/Limit Order Feature):**
+        -   **New (`order-entry.ts`):** Added `orderTypeSelected` signal, `@Input() bestBidPrice`, `@Input() bestAskPrice`. Implemented `effect` to auto-set price for 'market' orders.
+        -   **New (`order-entry.html`):** Added radio buttons for "Market"/"Limit" selection. Price input now `[disabled]` and `[readonly]` for market orders.
+        -   **Updated (`order-entry.scss`):** Added styles for button-like radio selectors. Enhanced styling for disabled/readonly price input. Corrected layout so "Order Type:" label is above the "Market"/"Limit" buttons, which are arranged horizontally.
+    -   **Updated Global Styles (`styles.scss`):**
+        -   Defined `--button-text-color` as white (#ffffff).
+        -   Applied `var(--button-text-color)` to the global `button` style to ensure high contrast text on primary-colored buttons.
+    -   **Updated `OrderBookComponent` (`order-book.scss`):**
+        -   Corrected hover effect for the "Show/Hide Order Form" button to use SASS `darken`, fixing a visual bug.
+    -   **Updated `OrderBookComponent` (to support OrderEntry Market/Limit):**
+        -   **New (`order-book.ts`):** Added `computed` signals `bestBidPrice` and `bestAskPrice`.
+        -   **New (`order-book.html`):** `<app-order-entry>` now receives `bestBidPrice()` and `bestAskPrice()` as inputs.
     -   `MyOrdersComponent`: Styling applied. (Functionality to be fleshed out).
 -   **HttpClient:** Configured.
 -   **Git:**

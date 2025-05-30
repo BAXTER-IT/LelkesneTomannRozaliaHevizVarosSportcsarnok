@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, Input, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { OrderService, OrderCreateRequest } from '../../services/order';
@@ -18,6 +18,11 @@ export class OrderEntry {
     quantity: 0,
     tradingPair: 'BTCUSDT' // Default or allow selection
   };
+
+  orderTypeSelected = signal<'market' | 'limit'>('market');
+
+  @Input() bestBidPrice: number | null = null;
+  @Input() bestAskPrice: number | null = null;
   
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
@@ -31,6 +36,29 @@ export class OrderEntry {
     if (!this.authService.isAuthenticated()) {
       this.router.navigate(['/login']);
     }
+
+    effect(() => {
+      const currentOrderType = this.orderTypeSelected();
+      const currentSide = this.orderRequest.type; // 'BUY' or 'SELL'
+
+      if (currentOrderType === 'market') {
+        if (currentSide === 'BUY' && this.bestAskPrice !== null) {
+          this.orderRequest.price = this.bestAskPrice;
+        } else if (currentSide === 'SELL' && this.bestBidPrice !== null) {
+          this.orderRequest.price = this.bestBidPrice;
+        } else {
+          // Set to 0 or a non-submittable value if price isn't available
+          // This also helps in the form validation for price > 0
+          this.orderRequest.price = 0; 
+        }
+      } else {
+        // For 'limit' orders, if switching from 'market',
+        // we might want to clear the price or set it to a default.
+        // For now, we'll let the user manage it.
+        // If a previous market price was set, it will remain unless changed by user.
+        // Consider this.orderRequest.price = 0; if a reset is desired.
+      }
+    });
   }
 
   submitOrder(): void {
