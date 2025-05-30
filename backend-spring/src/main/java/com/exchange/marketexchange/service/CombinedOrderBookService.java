@@ -19,8 +19,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
+import java.util.Set; // Added
+import java.util.TreeSet; // Added
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+
+import com.exchange.marketexchange.model.OrderSource; // Added
 
 @Service
 public class CombinedOrderBookService {
@@ -73,24 +77,45 @@ public class CombinedOrderBookService {
         List<OrderBookEntry> binanceBidsList = binanceDataService.getBinanceBids();
         List<OrderBookEntry> binanceAsksList = binanceDataService.getBinanceAsks();
 
-        // 3. Combine and aggregate bids
-        Map<BigDecimal, BigDecimal> aggregatedBids = new TreeMap<>(Collections.reverseOrder()); // Price -> TotalQuantity
-        processOrdersForAggregation(aggregatedBids, userBidsMap, OrderType.BUY);
-        processExternalEntriesForAggregation(aggregatedBids, binanceBidsList);
-        
-        // 4. Combine and aggregate asks
-        Map<BigDecimal, BigDecimal> aggregatedAsks = new TreeMap<>(); // Price -> TotalQuantity
-        processOrdersForAggregation(aggregatedAsks, userAsksMap, OrderType.SELL);
-        processExternalEntriesForAggregation(aggregatedAsks, binanceAsksList);
+        // 3. Aggregate user and Binance orders separately
+        Map<BigDecimal, BigDecimal> userAggregatedBids = new TreeMap<>(Collections.reverseOrder());
+        Map<BigDecimal, BigDecimal> binanceAggregatedBids = new TreeMap<>(Collections.reverseOrder());
+        processOrdersForAggregation(userAggregatedBids, userBidsMap, OrderType.BUY);
+        processExternalEntriesForAggregation(binanceAggregatedBids, binanceBidsList);
 
-        // 5. Convert to OrderBookEntry lists and limit depth
-        List<OrderBookEntry> topBids = aggregatedBids.entrySet().stream()
-                .map(entry -> new OrderBookEntry(entry.getKey(), entry.getValue()))
+        Map<BigDecimal, BigDecimal> userAggregatedAsks = new TreeMap<>();
+        Map<BigDecimal, BigDecimal> binanceAggregatedAsks = new TreeMap<>();
+        processOrdersForAggregation(userAggregatedAsks, userAsksMap, OrderType.SELL);
+        processExternalEntriesForAggregation(binanceAggregatedAsks, binanceAsksList);
+
+        // 4. Combine aggregated data, set source, and limit depth
+        Set<BigDecimal> allBidPrices = new TreeSet<>(Collections.reverseOrder());
+        allBidPrices.addAll(userAggregatedBids.keySet());
+        allBidPrices.addAll(binanceAggregatedBids.keySet());
+
+        List<OrderBookEntry> topBids = allBidPrices.stream()
+                .map(price -> {
+                    BigDecimal userQty = userAggregatedBids.getOrDefault(price, BigDecimal.ZERO);
+                    BigDecimal binanceQty = binanceAggregatedBids.getOrDefault(price, BigDecimal.ZERO);
+                    BigDecimal totalQty = userQty.add(binanceQty);
+                    OrderSource source = userQty.compareTo(BigDecimal.ZERO) > 0 ? OrderSource.USER : OrderSource.BINANCE;
+                    return new OrderBookEntry(price, totalQty, source);
+                })
                 .limit(DEPTH_LIMIT)
                 .collect(Collectors.toList());
 
-        List<OrderBookEntry> topAsks = aggregatedAsks.entrySet().stream()
-                .map(entry -> new OrderBookEntry(entry.getKey(), entry.getValue()))
+        Set<BigDecimal> allAskPrices = new TreeSet<>(); // Natural order for asks
+        allAskPrices.addAll(userAggregatedAsks.keySet());
+        allAskPrices.addAll(binanceAggregatedAsks.keySet());
+
+        List<OrderBookEntry> topAsks = allAskPrices.stream()
+                .map(price -> {
+                    BigDecimal userQty = userAggregatedAsks.getOrDefault(price, BigDecimal.ZERO);
+                    BigDecimal binanceQty = binanceAggregatedAsks.getOrDefault(price, BigDecimal.ZERO);
+                    BigDecimal totalQty = userQty.add(binanceQty);
+                    OrderSource source = userQty.compareTo(BigDecimal.ZERO) > 0 ? OrderSource.USER : OrderSource.BINANCE;
+                    return new OrderBookEntry(price, totalQty, source);
+                })
                 .limit(DEPTH_LIMIT)
                 .collect(Collectors.toList());
         
@@ -100,7 +125,6 @@ public class CombinedOrderBookService {
     private void processOrdersForAggregation(Map<BigDecimal, BigDecimal> aggregatedMap,
                                              NavigableMap<BigDecimal, List<Order>> ordersMap,
                                              OrderType type) {
-        // Ensure correct iteration order for bids (desc) and asks (asc)
         // The NavigableMap from repository is already sorted correctly.
         for (Map.Entry<BigDecimal, List<Order>> entry : ordersMap.entrySet()) {
             BigDecimal price = entry.getKey();
@@ -113,8 +137,11 @@ public class CombinedOrderBookService {
     
     private void processExternalEntriesForAggregation(Map<BigDecimal, BigDecimal> aggregatedMap,
                                                       List<OrderBookEntry> externalEntries) {
+        if (externalEntries == null) return; // Add null check for safety
         for (OrderBookEntry entry : externalEntries) {
-            aggregatedMap.merge(entry.getPrice(), entry.getTotalQuantity(), BigDecimal::add);
+            if (entry.getPrice() != null && entry.getTotalQuantity() != null) { // Add null checks for entry fields
+                aggregatedMap.merge(entry.getPrice(), entry.getTotalQuantity(), BigDecimal::add);
+            }
         }
     }
 }

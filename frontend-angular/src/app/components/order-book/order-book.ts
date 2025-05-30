@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 export interface DisplayOrderBookEntry {
   price: number;
   totalQuantity: number;
+  source: 'USER' | 'BINANCE'; // <-- New field
 }
 
 @Component({
@@ -48,6 +49,8 @@ export class OrderBook implements OnInit, OnDestroy {
         } else if (message.bids && message.asks && message.tradingPair) {
           // Assuming the message is a CombinedOrderBook
           this.currentTradingPair.set(message.tradingPair);
+          // Ensure the incoming bids/asks are correctly cast to DisplayOrderBookEntry[]
+          // which now includes the 'source' property.
           this.bids.set(message.bids as DisplayOrderBookEntry[]);
           this.asks.set(message.asks as DisplayOrderBookEntry[]);
           if (message.timestamp) {

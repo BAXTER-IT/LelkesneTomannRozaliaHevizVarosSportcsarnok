@@ -43,6 +43,9 @@ The primary focus is on establishing a complete and robust authentication flow, 
     -   **New:** Styled `MyOrdersComponent` (`my-orders.scss`, `my-orders.html`) with a responsive table layout for displaying user orders and added a `div.table-container` for better small-screen scrollability.
     -   **Fix:** Corrected SASS `lighten()`/`darken()` usage in component SCSS files (`order-entry.scss`, `order-book.scss`, `my-orders.scss`) by ensuring SASS variables (e.g., `global.$primary-color-value`) are used with the `global.` namespace.
     -   **Fix:** Corrected SASS import path for `styles.scss` in `app.scss`.
+    -   **New:** Differentiated user's order book entries from exchange entries with distinct background, bolder, and larger text.
+        -   Backend: Added `source` field to `OrderBookEntry.java` and updated `CombinedOrderBookService.java` to populate it.
+        -   Frontend: Updated `DisplayOrderBookEntry` and `WebSocketMessage` interfaces. Added CSS variables in `styles.scss`, defined `.user-order-entry` class in `order-book.scss`, and applied it conditionally in `order-book.html`.
     -   Previously completed: `LoginComponent` styling.
     -   Previously completed: SASS compilation error resolved (initial one).
 - **Previously Completed (Backend Setup):**

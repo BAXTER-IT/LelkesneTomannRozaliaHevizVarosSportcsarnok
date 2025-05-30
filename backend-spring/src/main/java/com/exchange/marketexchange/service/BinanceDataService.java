@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
+import com.exchange.marketexchange.model.OrderSource; // Added
+
 @Service
 public class BinanceDataService {
 
@@ -102,13 +104,13 @@ public class BinanceDataService {
         if (payload.getBids() != null) {
             binanceBids.clear();
             binanceBids.addAll(payload.getBids().stream()
-                    .map(entry -> new OrderBookEntry(new BigDecimal(entry.get(0)), new BigDecimal(entry.get(1))))
+                    .map(entry -> new OrderBookEntry(new BigDecimal(entry.get(0)), new BigDecimal(entry.get(1)), OrderSource.BINANCE))
                     .collect(Collectors.toList()));
         }
         if (payload.getAsks() != null) {
             binanceAsks.clear();
             binanceAsks.addAll(payload.getAsks().stream()
-                    .map(entry -> new OrderBookEntry(new BigDecimal(entry.get(0)), new BigDecimal(entry.get(1))))
+                    .map(entry -> new OrderBookEntry(new BigDecimal(entry.get(0)), new BigDecimal(entry.get(1)), OrderSource.BINANCE))
                     .collect(Collectors.toList()));
         }
         logger.debug("Updated local Binance order book. Bids: {}, Asks: {}", binanceBids.size(), binanceAsks.size());

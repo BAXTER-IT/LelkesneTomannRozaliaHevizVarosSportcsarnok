@@ -7,8 +7,8 @@ export interface WebSocketMessage {
   // Define the structure of messages you expect from the WebSocket
   // For example, for CombinedOrderBook:
   tradingPair?: string;
-  bids?: { price: number; totalQuantity: number }[];
-  asks?: { price: number; totalQuantity: number }[];
+  bids?: { price: number; totalQuantity: number; source: 'USER' | 'BINANCE' }[];
+  asks?: { price: number; totalQuantity: number; source: 'USER' | 'BINANCE' }[];
   timestamp?: number;
   type?: string; // e.g., 'orderBookUpdate', 'error', 'info'
   payload?: any;

@@ -34,6 +34,11 @@ $danger-color-value: #e63946; // Modern red
   --ask-color: var(--danger-color);  // Red for asks
   --ask-color-light: #fde2e4;   // Lighter background for ask items
 
+  // User order entry specific styles
+  --user-order-entry-bg: #e3f2fd; // Example: a light blue background
+  --user-order-entry-text-color: var(--text-color); // Or a specific color
+  --user-order-entry-font-weight: 600; // Bolder
+  --user-order-entry-font-size: 1.05em; // Slightly larger
 
   --background-color: #f8f9fa; // Lighter grey background
   --surface-color: #ffffff;    // White for card-like elements

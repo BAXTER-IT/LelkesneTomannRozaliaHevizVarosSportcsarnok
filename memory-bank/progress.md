@@ -54,6 +54,9 @@
     -   **New:** `MyOrdersComponent` (`my-orders.scss`, `my-orders.html`): Styled with a responsive table layout. Added `div.table-container` in HTML for better small-screen scrollability.
     -   **Fix:** Corrected SASS import paths in `my-orders.scss`, `order-book.scss`, `order-entry.scss` (from `../../../../styles.scss` to `../../../styles.scss`) and in `app.scss` (from `../../styles.scss` to `../styles.scss`).
     -   **Fix:** Corrected SASS `lighten()`/`darken()` usage in component SCSS files (`order-entry.scss`, `order-book.scss`, `my-orders.scss`) by ensuring SASS variables (e.g., `global.$primary-color-value`) are used with the `global.` namespace.
+    -   **New (Order Book Styling):** Differentiated user's order book entries from exchange entries.
+        -   Backend: Added `source` to `OrderBookEntry.java`, updated `CombinedOrderBookService.java` to populate it.
+        -   Frontend: Updated `DisplayOrderBookEntry` and `WebSocketMessage` interfaces. Added CSS variables in `styles.scss`, defined and applied `.user-order-entry` class in `order-book.scss` and `order-book.html`.
     -   `LoginComponent`: Previously styled with loading/error states.
 -   **Core Services:**
     -   **Updated `OrderService` (`services/order.ts`):** Base URL updated to be relative for proxy usage. `getMyOrders()` is now actively used post-login. (Auth header handling within `OrderService` itself still needs refinement).

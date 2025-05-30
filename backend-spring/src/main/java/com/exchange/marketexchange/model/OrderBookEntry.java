@@ -12,4 +12,5 @@ import java.math.BigDecimal;
 public class OrderBookEntry {
     private BigDecimal price;
     private BigDecimal totalQuantity;
+    private OrderSource source;
 }

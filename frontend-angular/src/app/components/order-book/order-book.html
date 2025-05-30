@@ -17,7 +17,7 @@
         </thead>
         <tbody>
           @for (bid of bids(); track bid.price) {
-            <tr>
+            <tr [ngClass]="{'user-order-entry': bid.source === 'USER'}">
               <td>{{ bid.price | number:'1.2-8' }}</td>
               <td>{{ bid.totalQuantity | number:'1.2-8' }}</td>
             </tr>
@@ -39,7 +39,7 @@
         </thead>
         <tbody>
           @for (ask of asks(); track ask.price) {
-            <tr>
+            <tr [ngClass]="{'user-order-entry': ask.source === 'USER'}">
               <td>{{ ask.price | number:'1.2-8' }}</td>
               <td>{{ ask.totalQuantity | number:'1.2-8' }}</td>
             </tr>
