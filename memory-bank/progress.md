@@ -1,50 +1,62 @@
 # Progress: Web-Based Market Exchange
 
-## Current Date: 2025-05-30
+## Current Date: 2025-05-30 (Updated)
 
 ## 1. What Works (Successfully Implemented & Tested)
 
 ### Backend:
--   **Core Application:** Spring Boot application starts successfully.
+-   **Core Application:** Spring Boot application now starts successfully on port 8080 (port conflict resolved).
 -   **Dependencies:** Maven dependencies resolve, and the project compiles (Java 1.8 target).
 -   **Circular Dependencies:** Resolved between services.
--   **Data Models:** All core data models (`Order`, `User`, etc.) are defined.
+-   **Data Models:** All core data models (`Order`, `User`, etc.) are defined. `UserLoginResponseDTO` added.
 -   **In-Memory Repository:** `InMemoryUserOrderRepository` for user orders is functional.
--   **Basic Security:** HTTP Basic Authentication with in-memory users (`user1`/`pass1`, `user2`/`pass2`) is active.
+-   **Security & Authentication:**
+    -   HTTP Basic Authentication with in-memory users (`user1`/`pass1`, `user2`/`pass2`) is active.
+    -   **New:** `AuthController` with `POST /api/auth/login` endpoint implemented. Successfully returns `UserLoginResponseDTO` on valid Basic Auth.
+    -   **Updated:** `SecurityConfig.java` includes CORS configuration. `application.properties` confirmed to use port 8080.
 -   **REST API (User Orders):**
     -   `POST /api/orders` (create order): Tested successfully with `curl`. Authenticated users can create orders.
     -   `DELETE /api/orders/{orderId}` (cancel order): Skeleton implemented.
-    -   `GET /api/orders/my-orders` (get user's orders): Skeleton implemented.
+    -   `GET /api/orders/my-orders` (get user's orders): Skeleton implemented. This endpoint is now called by the frontend after successful login.
 -   **Binance Integration:**
-    -   `BinanceDataService` connects to Binance's public WebSocket stream (`wss://stream.binance.com:9443/ws/btcusdt@depth5@100ms`) upon application startup.
-    -   Parses incoming depth messages (top 5 levels).
+    -   `BinanceDataService` connects to Binance's public WebSocket stream.
+    -   Parses incoming depth messages.
 -   **Order Book Aggregation & Broadcast:**
-    -   `CombinedOrderBookService` aggregates user and Binance data (logic in place).
-    -   `OrderBookWebSocketHandler` is set up to broadcast these combined updates.
-    -   Updates are triggered by `BinanceDataService` and `UserOrderService` (when orders are created/cancelled).
+    -   `CombinedOrderBookService` aggregates user and Binance data.
+    -   `OrderBookWebSocketHandler` broadcasts combined updates.
 
 ### Frontend:
 -   **Project Setup:** Angular (zoneless) project `frontend-angular` created.
--   **Build Environment:** Node.js (v20.19.2) and Angular CLI are installed and functional.
--   **Dependencies:** `npm install` completed successfully.
--   **Development Server:** Angular dev server (`npm start`) runs and serves the application.
+-   **Build Environment:** Node.js (v20.19.2) and Angular CLI functional.
+-   **Dependencies:** `npm install` completed.
+-   **Development Server:** Angular dev server (`npm start`) runs.
+    -   **New:** Configured with `proxy.conf.json` in `angular.json` to proxy `/api` and `/ws` requests to `http://localhost:8080`.
+    -   **Updated:** `package.json`'s `start` script modified to `ng serve --proxy-config proxy.conf.json` to ensure proxy is always active for `npm start`.
 -   **Authentication & Routing:**
-    -   `AuthService` (`services/auth.ts`): Login logic functional. Logout logic now includes navigation to `/login`. `isAuthenticated` and `currentUser` signals provide reactive auth state.
-    -   `AuthGuard` (`guards/auth.guard.ts`): Created and functional, protects routes based on `AuthService.isAuthenticated()`.
-    -   `app.routes.ts`: Routes restructured for independent login page (`/login`) and authenticated application area (`/app/...`). Root and wildcard routes correctly redirect.
-    -   `LoginComponent` (`components/login/login.ts`): Navigates to `/app/order-book` on successful login.
-    -   `app.html` & `app.ts`: Main layout now conditionally renders header/footer and navigation links based on authentication state, providing a clean login page.
+    -   **Updated `AuthService` (`services/auth.ts`):**
+        -   `UserLoginResponseDTO` interface defined.
+        -   `login()` method now calls the (proxied) `POST /api/auth/login` backend endpoint.
+        -   Base URL updated to be relative for proxy usage.
+        -   Correctly handles success (updates `localStorage`, `isAuthenticated` & `currentUser` signals) and error (calls `logout`).
+        -   Returns `Observable<UserLoginResponseDTO | null>`.
+    -   `AuthGuard` (`guards/auth.guard.ts`): Protects routes.
+    -   `app.routes.ts`: Routes for `/login` and `/app/...` structured.
+    -   **Updated `LoginComponent` (`components/login/login.ts`):**
+        -   Injects `OrderService`.
+        -   Subscribes to the new `authService.login()` method.
+        -   On successful login, navigates to `/app/order-book` and **now calls `orderService.getMyOrders()`**.
+    -   `app.html` & `app.ts`: Conditional rendering based on auth state.
 -   **UI/UX & Styling:**
-    -   `styles.scss`: Global styles established, including CSS reset, default typography, CSS variables for theming, and base styles for common elements. SASS compilation error with `darken()` function resolved.
-    -   `LoginComponent` (`components/login/login.scss`, `components/login/login.html`): Styled for a full-page, modern, and centered appearance. Includes loading indicator and error message styling.
--   **Core Services (Skeletons/Partially Implemented):**
-    -   `WebSocketService`: Implemented with `rxjs/webSocket`, includes connection logic, message deserialization, and reconnection attempts. Logging enhanced. (Needs testing for data display).
-    -   `OrderService`: Methods for REST API interaction (create, cancel, get my orders) are defined. (Auth header handling needs refinement).
+    -   `styles.scss`: Global styles and theming variables.
+    -   `LoginComponent`: Styled with loading/error states.
+-   **Core Services:**
+    -   **Updated `OrderService` (`services/order.ts`):** Base URL updated to be relative for proxy usage. `getMyOrders()` is now actively used post-login. (Auth header handling within `OrderService` itself still needs refinement).
+    -   **Updated `WebSocketService` (`services/websocket.ts`):** WebSocket URL (`wsUrl`) updated to be relative to `window.location.host` to work with the proxy. (Needs full data display testing).
 -   **Basic Components (Skeletons/Partially Implemented):**
-    -   `OrderBookComponent`: TS logic to connect to WebSocket and handle messages; basic HTML template to display data. (Needs data display debugging).
-    -   `OrderEntryComponent`: HTML form and TS logic for submitting orders.
-    -   `MyOrdersComponent`: TS logic to fetch user orders and cancel them; HTML template to display.
--   **HttpClient:** `provideHttpClient(withInterceptorsFromDi())` is configured.
+    -   `OrderBookComponent`: (Needs data display debugging).
+    -   `OrderEntryComponent`.
+    -   `MyOrdersComponent`.
+-   **HttpClient:** Configured.
 
 ## 2. What's Left to Build / Refine (Key Areas)
 
@@ -85,6 +97,12 @@
 
 -   **Frontend WebSocket Display:** `OrderBookComponent` was not displaying live data in the last browser test (stuck on "Loading..."). This needs to be the top priority for debugging.
 -   **Frontend Auth Header Management:** The `AuthService.getAuthHeaders()` method is a placeholder and needs a proper solution for services like `OrderService` to make authenticated API calls.
+-   **CORS/404 Error on Login:** (Resolved) Initially a CORS error, then a 404. Resolved by:
+    1.  Ensuring backend Spring Boot application runs successfully on port 8080 (resolved port conflict).
+    2.  Implementing an Angular proxy (`proxy.conf.json`) to route API and WebSocket requests.
+    3.  Updating frontend services to use relative URLs.
+    4.  Updating `package.json` start script to ensure proxy is used.
+    5.  (User needs to ensure Angular dev server is restarted after proxy config changes).
 -   **Node.js Version Warning:** (Resolved) While Angular CLI installed, `npm` warned about Node.js v18.19.1 not being officially supported by the latest CLI (which prefers v20.11+). This was resolved by upgrading Node.js to v20.19.2 using nvm.
 
 ## 5. Evolution of Project Decisions
@@ -97,3 +115,5 @@
 -   **Browser Testing Paused:** (Historical) Paused direct browser interaction to focus on completing the Memory Bank setup.
 -   **SASS `darken()` with CSS Variables:** Resolved by introducing a SASS variable for compile-time processing.
 -   **Login Page UI:** Refined to be a standalone view by conditionally rendering the main app header/footer.
+-   **CORS Handling:** Shifted from backend-only CORS configuration to a frontend proxy (`proxy.conf.json`) for the Angular development server due to persistent preflight/404 issues.
+-   **Backend Port:** Temporarily changed to 8081 due to port conflict, then reverted to 8080 after user indicated the port might be free.

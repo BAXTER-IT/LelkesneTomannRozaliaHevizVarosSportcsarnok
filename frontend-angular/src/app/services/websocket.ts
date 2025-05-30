@@ -19,7 +19,10 @@ export interface WebSocketMessage {
 })
 export class WebSocketService implements OnDestroy {
   private socket$!: WebSocketSubject<WebSocketMessage>;
-  private readonly wsUrl = 'ws://localhost:8080/ws/market'; // Adjust if your backend URL is different
+  // Determine protocol (ws or wss) based on window.location.protocol
+  private readonly wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  // Use window.location.host for host and port, then append the path
+  private readonly wsUrl = `${this.wsProtocol}//${window.location.host}/ws/market`;
   
   // Subject to allow components to subscribe to messages
   private messagesSubject = new Subject<WebSocketMessage>();

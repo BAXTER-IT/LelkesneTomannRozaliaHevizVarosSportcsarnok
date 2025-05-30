@@ -28,7 +28,7 @@ export interface OrderCreateRequest {
   providedIn: 'root',
 })
 export class OrderService {
-  private baseUrl = 'http://localhost:8080/api/orders'; // Adjust if your backend URL is different
+  private baseUrl = '/api/orders'; // Relative path for proxy
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

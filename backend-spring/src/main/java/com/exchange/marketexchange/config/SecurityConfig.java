@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,6 +12,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -37,8 +44,21 @@ public class SecurityConfig {
     }
 
     @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:4200")); // Frontend origin
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        configuration.setAllowCredentials(true); // Important for cookies, Basic Auth, etc.
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // Apply CORS to all paths
+        return source;
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .cors(Customizer.withDefaults()) // Enable CORS using the corsConfigurationSource bean
             .csrf(csrf -> csrf.disable()) // Disable CSRF, common for APIs / JWT
             .authorizeHttpRequests(authz -> authz
                 .antMatchers("/ws/**").permitAll() // Allow WebSocket connections
@@ -46,7 +66,7 @@ public class SecurityConfig {
                 .antMatchers("/public/**").permitAll() // Any other public resources
                 .anyRequest().authenticated() // All other requests require authentication
             )
-            .httpBasic(); // Start with HTTP Basic auth for simplicity, can add formLogin or JWT later
+            .httpBasic(Customizer.withDefaults()); // Start with HTTP Basic auth
             // .formLogin(form -> form.loginPage("/login").permitAll()); // Example if we add a login page
 
         return http.build();

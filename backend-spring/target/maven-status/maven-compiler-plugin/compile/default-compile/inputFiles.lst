@@ -1,3 +1,5 @@
+/home/avarga/Projects/workshop/LelkesneTomannRozaliaHevizVarosSportcsarnok/backend-spring/src/main/java/com/exchange/marketexchange/model/dto/UserLoginResponseDTO.java
+/home/avarga/Projects/workshop/LelkesneTomannRozaliaHevizVarosSportcsarnok/backend-spring/src/main/java/com/exchange/marketexchange/controller/AuthController.java
 /home/avarga/Projects/workshop/LelkesneTomannRozaliaHevizVarosSportcsarnok/backend-spring/src/main/java/com/exchange/marketexchange/model/CombinedOrderBook.java
 /home/avarga/Projects/workshop/LelkesneTomannRozaliaHevizVarosSportcsarnok/backend-spring/src/main/java/com/exchange/marketexchange/service/CombinedOrderBookService.java
 /home/avarga/Projects/workshop/LelkesneTomannRozaliaHevizVarosSportcsarnok/backend-spring/src/main/java/com/exchange/marketexchange/controller/OrderController.java

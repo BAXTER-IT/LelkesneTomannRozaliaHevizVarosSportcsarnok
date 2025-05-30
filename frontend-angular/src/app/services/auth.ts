@@ -1,24 +1,29 @@
-import { Injectable, signal, inject } from '@angular/core'; // Import inject
+import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Router } from '@angular/router'; // Import Router
-import { Observable, of, tap } from 'rxjs'; // Removed BehaviorSubject as it's not used
-import { catchError } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { Observable, of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
+
+// DTO for login response from backend
+export interface UserLoginResponseDTO {
+  username: string;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private baseUrl = 'http://localhost:8080'; // Adjust if your backend URL is different
+  private baseUrl = ''; // Base URL will be relative to the proxy
   private readonly AUTH_KEY = 'currentUserAuth';
 
   // Using a signal for reactive authentication state
   public isAuthenticated = signal<boolean>(this.hasAuthData());
   public currentUser = signal<string | null>(this.getUsernameFromStorage());
 
-  private http = inject(HttpClient); // Use inject
-  private router = inject(Router); // Use inject
+  private http = inject(HttpClient);
+  private router = inject(Router);
 
-  constructor() {} // Constructor can be empty or removed if not used
+  constructor() {}
 
   private hasAuthData(): boolean {
     return typeof localStorage !== 'undefined' && !!localStorage.getItem(this.AUTH_KEY);
@@ -29,10 +34,6 @@ export class AuthService {
     const authData = localStorage.getItem(this.AUTH_KEY);
     if (!authData) return null;
     try {
-      // Basic Auth: "Basic base64(username:password)"
-      // We'll just store the username for simplicity, not the full token for security.
-      // Or, if we switch to JWT, we'd store the JWT and decode username from it.
-      // For now, let's assume we store username directly after successful basic auth.
       const storedUser = JSON.parse(authData);
       return storedUser.username || null;
     } catch (e) {
@@ -40,38 +41,28 @@ export class AuthService {
     }
   }
 
-  // Basic Authentication Login
-  login(username: string, password: string): Observable<boolean> {
-    // For Basic Auth, the "token" is 'Basic ' + base64(username + ':' + password)
-    // We don't actually send a /login request for basic auth,
-    // the browser handles sending the Authorization header on subsequent requests.
-    // This login method will just verify credentials by making a simple authenticated request.
-    // A common approach is to fetch user details or a protected resource.
-    // Let's try to fetch user's orders as a way to verify.
+  // Updated Login Method
+  login(username: string, password: string): Observable<UserLoginResponseDTO | null> {
     const headers = new HttpHeaders({
       Authorization: 'Basic ' + btoa(username + ':' + password),
+      'Content-Type': 'application/json' // Good practice to set content type
     });
 
-    return this.http.get<any[]>(`${this.baseUrl}/api/orders/my-orders`, { headers, observe: 'response' })
+    return this.http.post<UserLoginResponseDTO>(`/api/auth/login`, {}, { headers }) // Relative path
       .pipe(
         tap(response => {
-          if (response.ok) {
-            // Store some indication of auth, e.g., the username and a flag or the basic token
-            // For simplicity, storing username. In a real app with JWT, you'd store the JWT.
-            if (typeof localStorage !== 'undefined') {
-              localStorage.setItem(this.AUTH_KEY, JSON.stringify({ username }));
-            }
-            this.isAuthenticated.set(true);
-            this.currentUser.set(username);
+          // On successful login, response is UserLoginResponseDTO
+          if (typeof localStorage !== 'undefined') {
+            localStorage.setItem(this.AUTH_KEY, JSON.stringify({ username: response.username }));
           }
+          this.isAuthenticated.set(true);
+          this.currentUser.set(response.username);
         }),
         catchError(error => {
           this.logout(); // Clear any partial auth state on error
-          return of(false);
-        }),
-        // Convert to boolean indicating success
-        (obs: Observable<any>) => obs.pipe(tap(res => !!res.ok), catchError(() => of(false)))
-      ) as Observable<boolean>;
+          return of(null); // Return null or an error object on failure
+        })
+      );
   }
 
   logout(): void {

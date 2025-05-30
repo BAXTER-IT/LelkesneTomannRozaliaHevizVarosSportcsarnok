@@ -1,8 +1,10 @@
 com/exchange/marketexchange/model/OrderType.class
 com/exchange/marketexchange/service/BinanceDataService.class
 com/exchange/marketexchange/model/CombinedOrderBook.class
+com/exchange/marketexchange/controller/AuthController.class
 com/exchange/marketexchange/service/CombinedOrderBookService.class
 com/exchange/marketexchange/model/OrderSource.class
+com/exchange/marketexchange/model/dto/UserLoginResponseDTO.class
 com/exchange/marketexchange/MarketExchangeApplication.class
 com/exchange/marketexchange/model/dto/BinanceDepthStreamPayload.class
 com/exchange/marketexchange/service/UserOrderService.class

@@ -2,41 +2,48 @@
 
 ## 1. Current Work Focus
 
-The primary focus has shifted to refining the frontend, specifically:
-- Implementing a robust authentication flow with an independent login page.
-- Improving the UI/UX, starting with the login page and global styling.
-- Ensuring the application correctly handles authenticated and unauthenticated states.
-- Addressing SASS compilation issues.
+The primary focus is on establishing a complete and robust authentication flow, including backend support and frontend integration, and ensuring subsequent authenticated actions (like fetching user-specific data) can be performed.
 
 ## 2. Recent Key Changes & Milestones
 
-- **Frontend - Authentication & Routing:**
-    -   Created `AuthGuard` (`guards/auth.guard.ts`) to protect routes requiring authentication.
-    -   Restructured `app.routes.ts`:
-        -   Established `/login` as the dedicated, unprotected login route.
-        -   Created `/app` as the main authenticated route, with child routes for `order-book`, `my-orders`, and `trade`.
-        -   Root (`/`) and wildcard (`**`) paths now redirect to `/app`, with `AuthGuard` handling redirection to `/login` if unauthenticated.
-    -   `LoginComponent` (`components/login/login.ts`) now navigates to `/app/order-book` on successful login.
-    -   `AuthService` (`services/auth.ts`) now injects `Router` and navigates to `/login` on logout.
-    -   Updated `app.html` and `app.ts` to:
-        -   Conditionally display main navigation links and Logout button only when authenticated.
-        -   Conditionally render the main `<header>` and `<footer>` only when authenticated, providing a clean view for the `LoginComponent`.
-- **Frontend - UI/UX & Styling:**
-    -   Added global styles to `styles.scss`, including a basic reset, default typography, CSS variables for theming (colors, spacing, fonts), and base styles for common elements (links, buttons, inputs).
-    -   Styled `LoginComponent` (`components/login/login.scss` and `components/login/login.html`):
-        -   Made the login page full-height and centered the form.
-        -   Applied modern styling to the form container, input groups, button, error messages, and added a loading indicator.
-    -   Resolved SASS compilation error in `styles.scss` by using a SASS variable (`$primary-color-value`) for the `darken()` function, ensuring compile-time color processing.
-- **Backend:**
-    -   (No recent changes, focus has been on frontend)
-    -   Successfully created and ran the Spring Boot application.
-    -   Resolved Java version compatibility issues in `pom.xml`.
-    -   Resolved circular dependencies between services using `@Lazy` and setter injection.
-    -   `BinanceDataService` successfully connects to Binance's WebSocket stream.
-    -   Basic REST API for order creation (`/api/orders`) tested successfully with `curl`.
-    -   In-memory user storage and WebSocket handler for broadcasting order book data are in place.
+- **Backend - Authentication:**
+    -   Created `UserLoginResponseDTO.java` (`model/dto/`) to define the response structure for successful login.
+    -   Implemented `AuthController.java` (`controller/`) with a new `POST /api/auth/login` endpoint.
+        -   This endpoint uses Spring Security's existing HTTP Basic Authentication mechanism.
+        -   On successful authentication, it returns the `UserLoginResponseDTO` containing the username.
+    -   Updated `SecurityConfig.java` to include CORS configuration.
+    -   Resolved backend port conflict (port 8080 was in use), backend now successfully starts on port 8080. `application.properties` confirmed/reverted to use port 8080.
+- **Frontend - Authentication, CORS Proxy & Data Fetching:**
+    -   Created `proxy.conf.json` to proxy API (`/api`) and WebSocket (`/ws`) requests from `http://localhost:4200` to `http://localhost:8080`. This was implemented to resolve persistent CORS/404 errors.
+    -   Updated `angular.json` to use `proxy.conf.json` for the development server.
+    -   Updated `package.json`'s `start` script to `ng serve --proxy-config proxy.conf.json` to ensure the proxy is always used during development.
+    -   Updated `AuthService.ts`, `OrderService.ts`, and `WebSocketService.ts` to use relative base URLs (e.g., `/api/auth/login`, `/ws/market`) to work with the proxy.
+    -   Defined `UserLoginResponseDTO` interface in `AuthService.ts`.
+    -   Updated `AuthService.login()`:
+        -   Now makes a `POST` request to the (proxied) `/api/auth/login` backend endpoint.
+        -   Includes the Basic Authentication header.
+        -   On successful response, stores user details in `localStorage` and updates `isAuthenticated` and `currentUser` signals.
+        -   Returns an `Observable<UserLoginResponseDTO | null>`.
+    -   Updated `LoginComponent` (`components/login/login.ts`):
+        -   Injects `OrderService`.
+        -   Subscribes to the updated `authService.login()`.
+        -   On successful login (receiving `UserLoginResponseDTO`):
+            -   Navigates to `/app/order-book`.
+            -   Calls `orderService.getMyOrders()` to fetch the user's orders.
+- **Previously Completed (Frontend - Authentication & Routing):**
+    -   `AuthGuard` (`guards/auth.guard.ts`) created to protect routes.
+    -   `app.routes.ts` restructured for `/login` and authenticated `/app` routes.
+    -   `AuthService` logout navigates to `/login`.
+    -   `app.html` and `app.ts` conditionally render UI based on authentication.
+- **Previously Completed (Frontend - UI/UX & Styling):**
+    -   Global styles in `styles.scss` and `LoginComponent` styling.
+    -   SASS compilation error resolved.
+- **Previously Completed (Backend Setup):**
+    -   Spring Boot application now successfully runs on port 8080, dependencies resolved, circular dependencies handled.
+    -   `BinanceDataService` connects.
+    -   Basic order creation API and WebSocket handler in place.
 - **Memory Bank:**
-    -   All core files (`projectbrief.md`, `productContext.md`, `systemPatterns.md`, `techContext.md`, `progress.md`, `activeContext.md`) are now created and being updated.
+    -   All core files are actively being updated to reflect progress.
 
 ## 3. Next Steps (Immediate)
 
